@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ChecksumHasher.UI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ChecksumHasher.UI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -7,7 +7,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-    </StackPanel>
+    <NavigationView
+        PaneDisplayMode="LeftCompact"
+        SelectionChanged="NavigationView_SelectionChanged">
+
+        <NavigationView.Resources>
+            <local:SupportedPageType x:Key="FileHasherPageTag">FileHasher</local:SupportedPageType>
+        </NavigationView.Resources>
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem Icon="OpenFile" Content="File" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="ContentFrame" />
+    </NavigationView>
 </Window>

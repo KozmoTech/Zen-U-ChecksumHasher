@@ -8,4 +8,8 @@
     <AssemblyName>KozmoTech.ZenUtility.ChecksumHasher.Core</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CoreFx.Extended\CoreFx.Extended.csproj" />
+  </ItemGroup>
+
 </Project>

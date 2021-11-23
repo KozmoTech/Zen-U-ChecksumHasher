@@ -13,23 +13,51 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 /// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
+/// MainWindow handles all root level navigation related stuffs.
 /// </summary>
 public sealed partial class MainWindow : Window
 {
     public MainWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
-    private void myButton_Click(object sender, RoutedEventArgs e)
+    private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        myButton.Content = "Clicked";
+        if (args.IsSettingsSelected)
+        {
+            NavigateTo(SupportedPageType.Settings);
+        }
+        else if (args.SelectedItemContainer is not null)
+        {
+            NavigateTo((SupportedPageType) args.SelectedItemContainer.Tag);
+        }
     }
+
+    private void NavigateTo(SupportedPageType targetPage)
+    {
+        if (targetPage != currentPage)
+        {
+            ContentFrame.Navigate(targetPage switch
+            {
+                SupportedPageType.FileHasher => typeof(FileHasherPage),
+                SupportedPageType.Settings => typeof(SettingsPage),
+                _ => throw new NotSupportedException($"page {targetPage} is not supported"),
+            });
+            currentPage = targetPage;
+        }
+    }
+
+    private SupportedPageType? currentPage = null;
+}
+
+/// <summary>
+/// A strongly typed enumeration representing all supported pages in this App.
+/// </summary>
+public enum SupportedPageType
+{
+    FileHasher, Settings
 }

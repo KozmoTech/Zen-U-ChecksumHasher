@@ -25,6 +25,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
     }
 
+    public AppSettingsViewModel SettingsViewModel => ViewModelLocator.SettingsViewModel;
+
     private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         if (args.IsSettingsSelected)

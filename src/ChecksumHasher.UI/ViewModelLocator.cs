@@ -11,10 +11,10 @@ internal static class ViewModelLocator
     public static FileHasherViewModel FileHasherViewModel => fileHasher.Value;
 
     /// <summary>
-    /// Get a singleton instance of <see cref="ChecksumHasher.SettingsViewModel"/> which represents the application runtime settings.
+    /// Get a singleton instance of <see cref="ChecksumHasher.AppSettingsViewModel"/> which represents the application runtime settings.
     /// </summary>
-    public static SettingsViewModel SettingsViewModel => settings.Value;
+    public static AppSettingsViewModel SettingsViewModel => settings.Value;
 
-    private static readonly Lazy<SettingsViewModel> settings = new();
+    private static readonly Lazy<AppSettingsViewModel> settings = new();
     private static readonly Lazy<FileHasherViewModel> fileHasher = new();
 }

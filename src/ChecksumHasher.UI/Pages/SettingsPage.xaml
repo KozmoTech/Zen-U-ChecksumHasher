@@ -3,14 +3,46 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
+    xmlns:winuiex="using:CommunityToolkit.WinUI.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical">
         <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
+
+        <TextBlock Text="Appearance" Style="{StaticResource SubtitleTextBlockStyle}" />
+        <Expander HorizontalContentAlignment="Left">
+            <Expander.Header>
+                <RelativePanel>
+                    <TextBlock
+                        x:Name="ThemeLabel"
+                        Text="App theme" />
+                    <TextBlock
+                        x:Name="ThemeLabelDescription"
+                        Text="Select which app theme to display"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        RelativePanel.Below="ThemeLabel" />
+                    <TextBlock
+                        Text="{x:Bind local:SettingsPage.FormatThemeDescription(ViewModel.UiTheme), Mode=OneWay}"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.RightOf="ThemeLabelDescription"
+                        RelativePanel.AlignVerticalCenterWithPanel="True" />
+                </RelativePanel>
+            </Expander.Header>
+
+            <RadioButtons ItemsSource="{winuiex:EnumValues Type=ElementTheme}" SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" >
+                <RadioButtons.ItemTemplate>
+                    <DataTemplate x:DataType="ElementTheme">
+                        <RadioButton Content="{x:Bind local:SettingsPage.FormatThemeDescription((ElementTheme))}" />
+                    </DataTemplate>
+                </RadioButtons.ItemTemplate>
+            </RadioButtons>
+        </Expander>
+
         <TextBlock Text="About" Style="{StaticResource SubtitleTextBlockStyle}" />
-        <TextBlock Text="Blah Blah Blah" />
+        <TextBlock Text="{x:Bind local:SettingsPage.FormatAppNameAndVersion(ViewModel.AppName, ViewModel.AppVersion, ViewModel.CoreVersion)}" />
         <TextBlock Text="(c) 2021" />
     </StackPanel>
 </Page>

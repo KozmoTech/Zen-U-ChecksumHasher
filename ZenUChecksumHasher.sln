@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreFx.Extended", "src\CoreFx.Extended\CoreFx.Extended.csproj", "{D061A69B-5270-44DA-9C18-2FAF5EE30467}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChecksumHasher.Core", "src\ChecksumHasher.Core\ChecksumHasher.Core.csproj", "{CC7E897A-DCBF-4518-8853-7D50D0AEAA3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChecksumHasher.Core", "src\ChecksumHasher.Core\ChecksumHasher.Core.csproj", "{CC7E897A-DCBF-4518-8853-7D50D0AEAA3D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChecksumHasher.UI", "src\ChecksumHasher.UI\ChecksumHasher.UI.csproj", "{9AD5C143-30CE-4D03-8989-880B74F8E0E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChecksumHasher.UI", "src\ChecksumHasher.UI\ChecksumHasher.UI.csproj", "{9AD5C143-30CE-4D03-8989-880B74F8E0E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,22 +19,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|arm64.Build.0 = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|x64.Build.0 = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Debug|x86.Build.0 = Debug|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|arm64.ActiveCfg = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|arm64.Build.0 = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|x64.ActiveCfg = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|x64.Build.0 = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|x86.ActiveCfg = Release|Any CPU
-		{D061A69B-5270-44DA-9C18-2FAF5EE30467}.Release|x86.Build.0 = Release|Any CPU
 		{CC7E897A-DCBF-4518-8853-7D50D0AEAA3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC7E897A-DCBF-4518-8853-7D50D0AEAA3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC7E897A-DCBF-4518-8853-7D50D0AEAA3D}.Debug|arm64.ActiveCfg = Debug|Any CPU

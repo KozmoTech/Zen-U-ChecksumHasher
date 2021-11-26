@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -25,5 +26,16 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
     }
 
-    public SettingsViewModel ViewModel => ViewModelLocator.SettingsViewModel;
+    public AppSettingsViewModel ViewModel => ViewModelLocator.SettingsViewModel;
+
+    public static string FormatThemeDescription(ElementTheme theme) =>
+        theme switch
+        {
+            ElementTheme.Light => "Light",
+            ElementTheme.Dark => "Dark",
+            _ => "Using system setting",
+        };
+
+    public static string FormatAppNameAndVersion(string appName, PackageVersion version, Version coreVersion) =>
+        $"{appName} {version.Major}.{version.Minor}.{version.Build}.{version.Revision}      (Core Library {coreVersion})";
 }

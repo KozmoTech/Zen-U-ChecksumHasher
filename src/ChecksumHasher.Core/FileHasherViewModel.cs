@@ -1,7 +1,7 @@
-﻿using KozmoTech.System.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher;
 
-public sealed class FileHasherViewModel : ViewModelBase
+public sealed class FileHasherViewModel : ObservableObject
 {
 }

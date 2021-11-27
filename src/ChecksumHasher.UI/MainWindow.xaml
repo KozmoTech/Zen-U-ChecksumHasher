@@ -10,6 +10,7 @@
 
     <Grid x:Name="RootUIContent" RequestedTheme="{x:Bind SettingsViewModel.UiTheme, Mode=OneWay}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <NavigationView
+            PaneDisplayMode="LeftCompact"
             SelectionChanged="NavigationView_SelectionChanged">
 
             <NavigationView.Resources>
@@ -17,7 +18,7 @@
             </NavigationView.Resources>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="OpenFile" Content="File" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
+                <NavigationViewItem Icon="OpenFile" Content="File Checksum" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />

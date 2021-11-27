@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.WinUI.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -23,7 +24,16 @@ public sealed partial class FileHasherPage : Page
     public FileHasherPage()
     {
         InitializeComponent();
+        SortedHashers = new(ViewModel.Hashers, true)
+        {
+            SortDescriptions =
+            {
+                new SortDescription(nameof(HashCalculatorViewModel.Algorithm), SortDirection.Ascending),
+            },
+        };
     }
 
     public FileHasherViewModel ViewModel => ViewModelLocator.FileHasherViewModel;
+
+    public AdvancedCollectionView SortedHashers { get; }
 }

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.WinUI.UI;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -8,6 +9,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -33,7 +36,8 @@ public sealed partial class FileHasherPage : Page
         };
     }
 
-    public FileHasherViewModel ViewModel => ViewModelLocator.FileHasherViewModel;
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
+    public FileHasherViewModel ViewModel => Ioc.Default.GetRequiredService<FileHasherViewModel>();
 
     public AdvancedCollectionView SortedHashers { get; }
 }

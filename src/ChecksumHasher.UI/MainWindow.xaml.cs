@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -25,7 +26,7 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
     }
 
-    public AppSettingsViewModel SettingsViewModel => ViewModelLocator.SettingsViewModel;
+    public AppSettingsViewModel SettingsViewModel => Ioc.Default.GetRequiredService<AppSettingsViewModel>();
 
     private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {

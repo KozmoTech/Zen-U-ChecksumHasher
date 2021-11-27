@@ -1,13 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using KozmoTech.ZenUtility.System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher;
 
-public sealed class FileHasherViewModel : ObservableObject
+public sealed partial class FileHasherViewModel : ObservableObject, IDisposable, IDisposableNullifyFields
 {
-    public FileHasherViewModel() => Hashers = new(hashers);
+    public FileHasherViewModel()
+    {
+        disposable = new(this);
+        Hashers = new(hashers);
+    }
+
+    public void Dispose() => disposable.DoDispose(hashers.ToArray());
+    void IDisposableNullifyFields.DisposeNullifyFields() => hashers.Clear();
 
     public ReadOnlyObservableCollection<HashCalculatorViewModel> Hashers { get; }
 
@@ -58,20 +66,21 @@ public sealed class FileHasherViewModel : ObservableObject
     private void UseHasher(HashAlgorithmType algorithm, bool value, [CallerMemberName] string? propertyName = null)
     {
         var currHasher = GetHasher(algorithm);
-        if (value != (currHasher is not null))
+        SetProperty(currHasher is not null, value, v =>
         {
-            OnPropertyChanging(propertyName);
-            if (value)
+            if (v)
             {
                 hashers.Add(CreateHasher(algorithm));
             }
             else
             {
                 Debug.Assert(currHasher is not null);
-                hashers.Remove(currHasher);
+                using (currHasher)
+                {
+                    hashers.Remove(currHasher);
+                }
             }
-            OnPropertyChanged(propertyName);
-        }
+        }, propertyName);
     }
 
     private static HashCalculatorViewModel CreateHasher(HashAlgorithmType algorithm)
@@ -90,6 +99,7 @@ public sealed class FileHasherViewModel : ObservableObject
         return hasher;
     }
 
+    private readonly DisposableHelper disposable;
     private readonly ObservableCollection<HashCalculatorViewModel> hashers = new()
     {
         CreateHasher(HashAlgorithmType.MD5),

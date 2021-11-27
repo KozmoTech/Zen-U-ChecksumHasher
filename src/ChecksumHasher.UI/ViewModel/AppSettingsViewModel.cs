@@ -29,14 +29,6 @@ public sealed partial class AppSettingsViewModel : SettingsViewModel
     public object SelectedTheme
     {
         get => UiTheme;
-        set
-        {
-            if (value is ElementTheme uiTheme && uiTheme != UiTheme)
-            {
-                OnPropertyChanging();
-                UiTheme = uiTheme;
-                OnPropertyChanged();
-            }
-        }
+        set => SetProperty(UiTheme, value as ElementTheme? ?? ElementTheme.Default, v => UiTheme = v);
     }
 }

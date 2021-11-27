@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -26,7 +27,7 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
     }
 
-    public AppSettingsViewModel ViewModel => ViewModelLocator.SettingsViewModel;
+    public AppSettingsViewModel ViewModel => Ioc.Default.GetRequiredService<AppSettingsViewModel>();
 
     public static string FormatThemeDescription(ElementTheme theme) =>
         theme switch

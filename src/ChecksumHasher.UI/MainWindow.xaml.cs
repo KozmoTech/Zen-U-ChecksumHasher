@@ -13,6 +13,9 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
@@ -24,6 +27,7 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        hwnd = WindowNative.GetWindowHandle(this);
     }
 
     public AppSettingsViewModel SettingsViewModel => Ioc.Default.GetRequiredService<AppSettingsViewModel>();
@@ -54,6 +58,13 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    public IAsyncOperation<StorageFile?> ShowPickSingleFileDialogAsync(FileOpenPicker dialog)
+    {
+        InitializeWithWindow.Initialize(dialog, hwnd);
+        return dialog.PickSingleFileAsync();
+    }
+
+    private readonly IntPtr hwnd;
     private SupportedPageType? currentPage = null;
 }
 

@@ -18,7 +18,7 @@
                 <AppBarButton Icon="Refresh" Label="Recalculate" />
             </CommandBar.SecondaryCommands>
 
-            <AppBarButton Icon="BrowsePhotos" Label="Browse" />
+            <AppBarButton Icon="BrowsePhotos" Label="Browse" Click="BrowseButton_Click" />
             <AppBarElementContainer>
                 <DropDownButton Content="Algorithms">
                     <DropDownButton.Flyout>
@@ -36,10 +36,20 @@
         <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray">
             <StackPanel>
                 <TextBlock Text="Drag files here" />
-                <Button Content="Browse" />
+                <Button Content="Browse" Click="BrowseButton_Click" />
             </StackPanel>
         </Border>
 
+        <StackPanel>
+            <TextBlock Text="Directory" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.DirectoryPath, Mode=OneWay}" />
+            <TextBlock Text="FileName" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}" />
+            <TextBlock Text="Length" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.Length, Mode=OneWay}" />
+            <Button Content="Cancel Computing" IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}" Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}" />
+        </StackPanel>
+        
         <ItemsRepeater ItemsSource="{x:Bind SortedHashers, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
@@ -47,12 +57,13 @@
                         <Expander.Header>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{x:Bind Algorithm}" />
+                                <TextBlock Text="{x:Bind ComputeProgress, Mode=OneWay}" />
                             </StackPanel>
                         </Expander.Header>
 
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="File Checksum" />
-                            <TextBlock Text="N/A" />
+                            <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
                             <TextBlock Text="Target" />
                             <TextBox />
                         </StackPanel>

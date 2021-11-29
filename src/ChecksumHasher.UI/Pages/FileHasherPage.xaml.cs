@@ -16,6 +16,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
@@ -40,4 +42,31 @@ public sealed partial class FileHasherPage : Page
     public FileHasherViewModel ViewModel => Ioc.Default.GetRequiredService<FileHasherViewModel>();
 
     public AdvancedCollectionView SortedHashers { get; }
+
+    private async void BrowseButton_Click(object sender, RoutedEventArgs e)
+    {
+        var filePicker = new FileOpenPicker
+        {
+            FileTypeFilter =
+            {
+                "*",
+            },
+        };
+
+        var mainWindow = ((App)Application.Current).MainWindow;
+        Debug.Assert(mainWindow is not null);
+        var file = await mainWindow.ShowPickSingleFileDialogAsync(filePicker);
+
+        if (file is not null)
+        {
+            await ComputeHashesAsync(file);
+        }
+    }
+
+    private async Task ComputeHashesAsync(StorageFile file)
+    {
+        ViewModel.FileInfo = new FileInfoViewModel(new WindowsFileInfo(file));
+        await ViewModel.FileInfo.RefreshPropertiesAsync();
+        await ViewModel.ComputeAllHashesCommand.ExecuteAsync(null);
+    }
 }

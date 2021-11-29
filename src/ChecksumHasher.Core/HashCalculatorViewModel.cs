@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using KozmoTech.ZenUtility.System;
 using KozmoTech.ZenUtility.System.IO;
 using System.Diagnostics;
@@ -21,15 +22,81 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
 
     public HashAlgorithmType Algorithm { get; }
 
-    public double ComputeProgress
+    [ObservableProperty]
+    [AlsoNotifyChangeFor(nameof(HashCodeString))]
+    private HashStringFormat hashCodeFormat = HashStringFormat.LowerCaseNoDash;
+
+    public double? ComputeProgress
     {
         get => progress;
-        set => SetProperty(ref progress, value);
+        private set => dispatcher.Dispatch(() => SetProperty(ref progress, value));
     }
+
+    public byte[]? HashCode
+    {
+        get => hashCode;
+        private set
+        {
+            SetProperty(ref hashCode, value);
+            OnPropertyChanged(nameof(HashCodeString));
+        }
+    }
+
+    public string? HashCodeString => HashCode is null ? null : FormatHashCodeString(HashCode, HashCodeFormat);
+
+    internal async Task ComputeHashAsync(IContentProvider content, CancellationToken cancellation = default)
+    {
+        using var reader = await content.CreateContentReaderAsync();
+
+        var progressStopwatch = Stopwatch.StartNew();
+        ComputeProgress = 0;
+        HashCode = null;
+        reader.ProgressChanged += Reader_ProgressChanged;
+
+        using var defer = new ScopeDefer(() =>
+        {
+            reader.ProgressChanged -= Reader_ProgressChanged;
+            ComputeProgress = null;
+            progressStopwatch.Stop();
+        });
+
+        try
+        {
+            HashCode = await hasher.ComputeHashAsync(reader, cancellation);
+        }
+        catch (TaskCanceledException)
+        {
+        }
+
+        void Reader_ProgressChanged(object? obj, EventArgs e)
+        {
+            Debug.Assert(obj is not null);
+            var sender = (StreamReaderWithProgress)obj;
+
+            // Throttle to improve UI performance
+            if (progressStopwatch.Elapsed >= ProgressChangeInterval)
+            {
+                ComputeProgress = (double)sender.LengthRead / sender.Length;
+                progressStopwatch.Restart();
+            }
+        }
+    }
+
+    private static string FormatHashCodeString(byte[] data, HashStringFormat format) =>
+        format switch
+        {
+            HashStringFormat.LowerCaseNoDash => string.Join("", from b in data select b.ToString("x2")),
+            HashStringFormat.UpperCaseNoDash => string.Join("", from b in data select b.ToString("X2")),
+            _ => BitConverter.ToString(data),
+        };
 
     private readonly DisposableHelper disposable;
     private readonly HashAlgorithm hasher;
-    private double progress;
+    private double? progress = null;
+    private byte[]? hashCode = null;
+    private IMainThreadDispatcher dispatcher = Ioc.Default.GetService<IMainThreadDispatcher>() ?? NoopDispatcher.Instance;
+
+    private static readonly TimeSpan ProgressChangeInterval = TimeSpan.FromSeconds(1);
 }
 
 public sealed class MD5CalculatorViewModel : HashCalculatorViewModel

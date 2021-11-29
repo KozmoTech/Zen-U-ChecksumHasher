@@ -18,7 +18,7 @@ internal interface IDisposableNullifyFields
     void DisposeNullifyFields();
 }
 
-internal struct DisposableHelper
+internal sealed class DisposableHelper
 {
     public DisposableHelper(IDisposable @this) => this.@this = @this ?? throw new ArgumentNullException(nameof(@this));
 

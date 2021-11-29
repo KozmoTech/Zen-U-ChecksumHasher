@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using KozmoTech.ZenUtility.System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -16,6 +17,9 @@ public sealed partial class FileHasherViewModel : ObservableObject, IDisposable,
 
     public void Dispose() => disposable.DoDispose(hashers.ToArray());
     void IDisposableNullifyFields.DisposeNullifyFields() => hashers.Clear();
+
+    [ObservableProperty]
+    private FileInfoViewModel? fileInfo = null;
 
     public ReadOnlyObservableCollection<HashCalculatorViewModel> Hashers { get; }
 
@@ -48,6 +52,13 @@ public sealed partial class FileHasherViewModel : ObservableObject, IDisposable,
         get => GetHasher(HashAlgorithmType.SHA512) is not null;
         set => UseHasher(HashAlgorithmType.SHA512, value);
     }
+
+    [ICommand]
+    internal Task ComputeAllHashesAsync(CancellationToken cancellation) =>
+        Task.WhenAll(from hasher in Hashers
+                     select hasher.ComputeHashAsync(
+                         FileInfo ?? throw new InvalidOperationException($"{nameof(FileInfo)} must be set"),
+                         cancellation));
 
     /// <summary>
     /// Get a hasher in <see cref="Hashers"/> whose <see cref="HashCalculatorViewModel.Algorithm"/> is <paramref name="algorithm"/>.

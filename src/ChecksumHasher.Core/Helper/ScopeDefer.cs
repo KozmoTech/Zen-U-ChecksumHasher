@@ -10,12 +10,16 @@
 /// </example>
 internal sealed class ScopeDefer : IDisposable, IDisposableManaged
 {
-    public ScopeDefer(Action disposing) => disposingAction = disposing ?? throw new ArgumentNullException(nameof(disposing));
+    public ScopeDefer(Action disposing)
+    {
+        disposable = new(this);
+        disposingAction = disposing ?? throw new ArgumentNullException(nameof(disposing));
+    }
 
     public void Dispose() => disposable.DoDispose();
 
     public void DisposeManagedResources() => disposingAction();
 
     private readonly Action disposingAction;
-    private readonly DisposableHelper disposable = new();
+    private readonly DisposableHelper disposable;
 }

@@ -16,8 +16,6 @@ internal sealed class StreamReaderWithProgress : Stream
         base.Dispose(disposing);
     }
 
-    public event EventHandler? ProgressChanged;
-
     public override bool CanWrite => false;
     public override bool CanSeek => false;
     public override void Flush() => throw new NotSupportedException("flush is not supported");
@@ -31,18 +29,7 @@ internal sealed class StreamReaderWithProgress : Stream
     /// <summary>
     /// Gets a long representing the number of bytes already read by the user.
     /// </summary>
-    public long LengthRead
-    {
-        get => lengthRead;
-        set
-        {
-            if (lengthRead != value)
-            {
-                lengthRead = value;
-                ProgressChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-    }
+    public long LengthRead { get; private set; } = 0;
 
     public override bool CanRead => innerStream.CanRead;
     public override long Position { get => innerStream.Position; set => throw new NotSupportedException("this is a forward-only stream"); }
@@ -58,5 +45,4 @@ internal sealed class StreamReaderWithProgress : Stream
     }
 
     private readonly Stream innerStream;
-    private long lengthRead = 0;
 }

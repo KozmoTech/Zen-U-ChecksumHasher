@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KozmoTech.ZenUtility.System;
+using KozmoTech.ZenUtility.System.Algorithm;
+using KozmoTech.ZenUtility.System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -53,12 +55,42 @@ public sealed partial class FileHasherViewModel : ObservableObject, IDisposable,
         set => UseHasher(HashAlgorithmType.SHA512, value);
     }
 
+    public double OverallProgress => Hashers.Average(x => x.ComputeProgress ?? 1);
+
+    public TimeSpan TimeRemaining => timeRemaining.TimeRemaining ?? TimeSpan.Zero;
+
     [ICommand]
-    internal Task ComputeAllHashesAsync(CancellationToken cancellation) =>
-        Task.WhenAll(from hasher in Hashers
-                     select hasher.ComputeHashAsync(
-                         FileInfo ?? throw new InvalidOperationException($"{nameof(FileInfo)} must be set"),
-                         cancellation));
+    internal async Task ComputeAllHashesAsync(CancellationToken cancellation)
+    {
+        if (FileInfo is null)
+        {
+            throw new InvalidOperationException($"{nameof(FileInfo)} must be set");
+        }
+        if (Hashers.Count == 0)
+        {
+            throw new InvalidOperationException($"there are no {nameof(Hashers)} to be computed");
+        }
+
+        OnPropertyChanged(nameof(OverallProgress));
+        timeRemaining.Start();
+        OnPropertyChanged(nameof(TimeRemaining));
+        using var defer = new ScopeDefer(() =>
+        {
+            timeRemaining.Stop();
+            OnPropertyChanged(nameof(OverallProgress));
+            OnPropertyChanged(nameof(TimeRemaining));
+        });
+
+        var runner = new TaskRunnerWithTimer(ProgressUpdateInterval, Runner_TimerCallback);
+        await runner.RunAsync(Task.WhenAll(from hasher in Hashers select hasher.ComputeHashAsync(FileInfo, cancellation)));
+
+        void Runner_TimerCallback()
+        {
+            OnPropertyChanged(nameof(OverallProgress));
+            timeRemaining.Progress = OverallProgress;
+            OnPropertyChanged(nameof(TimeRemaining));
+        }
+    }
 
     /// <summary>
     /// Get a hasher in <see cref="Hashers"/> whose <see cref="HashCalculatorViewModel.Algorithm"/> is <paramref name="algorithm"/>.
@@ -116,4 +148,7 @@ public sealed partial class FileHasherViewModel : ObservableObject, IDisposable,
         CreateHasher(HashAlgorithmType.MD5),
         CreateHasher(HashAlgorithmType.SHA256),
     };
+    private readonly TimeRemainingEstimator timeRemaining = new();
+
+    private static readonly TimeSpan ProgressUpdateInterval = TimeSpan.FromSeconds(1);
 }

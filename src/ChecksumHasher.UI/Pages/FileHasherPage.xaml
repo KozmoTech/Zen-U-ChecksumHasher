@@ -46,7 +46,9 @@
             <TextBlock Text="FileName" />
             <TextBlock Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}" />
             <TextBlock Text="Length" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.Length, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.OverallProgress, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay}" />
             <Button Content="Cancel Computing" IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}" Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}" />
         </StackPanel>
         

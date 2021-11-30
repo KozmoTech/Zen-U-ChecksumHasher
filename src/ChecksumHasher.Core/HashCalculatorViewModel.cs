@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using KozmoTech.ZenUtility.System;
-using KozmoTech.ZenUtility.System.IO;
-using System.Diagnostics;
+using KozmoTech.ZenUtility.System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
@@ -29,7 +27,7 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
     public double? ComputeProgress
     {
         get => progress;
-        private set => dispatcher.Dispatch(() => SetProperty(ref progress, value));
+        private set => SetProperty(ref progress, value);
     }
 
     public byte[]? HashCode
@@ -48,38 +46,21 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
     {
         using var reader = await content.CreateContentReaderAsync();
 
-        var progressStopwatch = Stopwatch.StartNew();
         ComputeProgress = 0;
+        using var defer = new ScopeDefer(() => ComputeProgress = null);
         HashCode = null;
-        reader.ProgressChanged += Reader_ProgressChanged;
-
-        using var defer = new ScopeDefer(() =>
-        {
-            reader.ProgressChanged -= Reader_ProgressChanged;
-            ComputeProgress = null;
-            progressStopwatch.Stop();
-        });
-
+        
         try
         {
-            HashCode = await hasher.ComputeHashAsync(reader, cancellation);
+            var runner = new TaskRunnerWithTimer(ProgressChangeInterval, Runner_TimerCallback);
+            HashCode = await runner.RunAsync(hasher.ComputeHashAsync(reader, cancellation));
         }
         catch (TaskCanceledException)
         {
         }
 
-        void Reader_ProgressChanged(object? obj, EventArgs e)
-        {
-            Debug.Assert(obj is not null);
-            var sender = (StreamReaderWithProgress)obj;
-
-            // Throttle to improve UI performance
-            if (progressStopwatch.Elapsed >= ProgressChangeInterval)
-            {
-                ComputeProgress = (double)sender.LengthRead / sender.Length;
-                progressStopwatch.Restart();
-            }
-        }
+        // reader.Length might not be correct for a huge file (> 130 GB) in the first several seconds
+        void Runner_TimerCallback() => ComputeProgress = (double)reader.LengthRead / content.TotalLength;
     }
 
     private static string FormatHashCodeString(byte[] data, HashStringFormat format) =>
@@ -94,9 +75,8 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
     private readonly HashAlgorithm hasher;
     private double? progress = null;
     private byte[]? hashCode = null;
-    private IMainThreadDispatcher dispatcher = Ioc.Default.GetService<IMainThreadDispatcher>() ?? NoopDispatcher.Instance;
 
-    private static readonly TimeSpan ProgressChangeInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan ProgressChangeInterval = TimeSpan.FromSeconds(0.6);
 }
 
 public sealed class MD5CalculatorViewModel : HashCalculatorViewModel

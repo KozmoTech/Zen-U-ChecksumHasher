@@ -11,13 +11,13 @@ public class FileInfoViewModel : ObservableObject, IContentProvider
     {
         OnPropertyChanging(nameof(FileName));
         OnPropertyChanging(nameof(DirectoryPath));
-        OnPropertyChanging(nameof(Length));
+        OnPropertyChanging(nameof(TotalLength));
 
         await file.LoadPropertiesAsync();
 
         OnPropertyChanged(nameof(FileName));
         OnPropertyChanged(nameof(DirectoryPath));
-        OnPropertyChanged(nameof(Length));
+        OnPropertyChanged(nameof(TotalLength));
     }
 
     async Task<StreamReaderWithProgress> IContentProvider.CreateContentReaderAsync()
@@ -28,7 +28,7 @@ public class FileInfoViewModel : ObservableObject, IContentProvider
 
     public string FileName => Path.GetFileName(file.FullPath) ?? string.Empty;
     public string DirectoryPath => Path.GetDirectoryName(file.FullPath) ?? string.Empty;
-    public ulong Length => file.Length;
+    public ulong TotalLength => file.Length;
 
     private readonly IFileInfo file;
 }

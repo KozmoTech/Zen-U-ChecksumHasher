@@ -60,7 +60,7 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
         }
 
         // reader.Length might not be correct for a huge file (> 130 GB) in the first several seconds
-        void Runner_TimerCallback() => ComputeProgress = (double)reader.LengthRead / content.TotalLength;
+        void Runner_TimerCallback() => ComputeProgress = (double)reader.LengthRead / (content.TotalLength ?? (ulong)reader.Length);
     }
 
     private static string FormatHashCodeString(byte[] data, HashStringFormat format) =>

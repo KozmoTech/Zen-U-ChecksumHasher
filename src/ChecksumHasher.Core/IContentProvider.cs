@@ -10,5 +10,5 @@ internal interface IContentProvider
     /// <returns>A <see cref="StreamReaderWithProgress"/> instance which can be used to read content.</returns>
     Task<StreamReaderWithProgress> CreateContentReaderAsync();
 
-    ulong TotalLength { get; }
+    ulong? TotalLength { get; }
 }

@@ -43,6 +43,14 @@ public sealed partial class FileHasherPage : Page
 
     public AdvancedCollectionView SortedHashers { get; }
 
+    public static ImageSource ToImageSource(IPicture picture) =>
+        picture switch
+        {
+            null => throw new ArgumentNullException(nameof(picture)),
+            BitmapPicture bitmap => bitmap.Image,
+            _ => throw new NotSupportedException($"{picture.GetType()} is not supported"),
+        };
+
     private async void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
         var filePicker = new FileOpenPicker
@@ -67,6 +75,8 @@ public sealed partial class FileHasherPage : Page
     {
         ViewModel.FileInfo = new FileInfoViewModel(new WindowsFileInfo(file));
         await ViewModel.FileInfo.RefreshPropertiesAsync();
-        await ViewModel.ComputeAllHashesCommand.ExecuteAsync(null);
+        await Task.WhenAll(
+            ViewModel.FileInfo.RefreshNonessentialPropertiesAsync(),
+            ViewModel.ComputeAllHashesCommand.ExecuteAsync(null));
     }
 }

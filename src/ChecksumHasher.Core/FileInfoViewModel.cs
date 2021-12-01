@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using KozmoTech.ZenUtility.System.IO;
+using System.ComponentModel;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher;
 
@@ -9,15 +10,14 @@ public class FileInfoViewModel : ObservableObject, IContentProvider
 
     public async Task RefreshPropertiesAsync()
     {
-        OnPropertyChanging(nameof(FileName));
-        OnPropertyChanging(nameof(DirectoryPath));
-        OnPropertyChanging(nameof(TotalLength));
-
         await file.LoadPropertiesAsync();
+        OnPropertyChanged(new PropertyChangedEventArgs(null));
+    }
 
-        OnPropertyChanged(nameof(FileName));
-        OnPropertyChanged(nameof(DirectoryPath));
-        OnPropertyChanged(nameof(TotalLength));
+    public async Task RefreshNonessentialPropertiesAsync()
+    {
+        await file.LoadIconAsync();
+        OnPropertyChanged(nameof(Icon));
     }
 
     async Task<StreamReaderWithProgress> IContentProvider.CreateContentReaderAsync()
@@ -28,7 +28,11 @@ public class FileInfoViewModel : ObservableObject, IContentProvider
 
     public string FileName => Path.GetFileName(file.FullPath) ?? string.Empty;
     public string DirectoryPath => Path.GetDirectoryName(file.FullPath) ?? string.Empty;
-    public ulong TotalLength => file.Length;
+    public string? FileType => file.Type;
+    public ulong? TotalLength => file.Length;
+    public IPicture? Icon => file.Icon;
+    public DateTimeOffset? CreatedAt => file.CreatedAt;
+    public DateTimeOffset? ModifiedAt => file.ModifiedAt;
 
     private readonly IFileInfo file;
 }

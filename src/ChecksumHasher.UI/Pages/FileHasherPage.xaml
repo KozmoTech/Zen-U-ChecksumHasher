@@ -45,8 +45,15 @@
             <TextBlock Text="{x:Bind ViewModel.FileInfo.DirectoryPath, Mode=OneWay}" />
             <TextBlock Text="FileName" />
             <TextBlock Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}" />
+            <TextBlock Text="Icon" />
+            <Border BorderThickness="1" BorderBrush="Green">
+                <Image Source="{x:Bind local:FileHasherPage.ToImageSource(ViewModel.FileInfo.Icon), Mode=OneWay}" Height="128" />
+            </Border>
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.FileType, Mode=OneWay}" />
             <TextBlock Text="Length" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay, TargetNullValue=}" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.CreatedAt, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.FileInfo.ModifiedAt, Mode=OneWay}" />
             <TextBlock Text="{x:Bind ViewModel.OverallProgress, Mode=OneWay}" />
             <TextBlock Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay}" />
             <Button Content="Cancel Computing" IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}" Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}" />

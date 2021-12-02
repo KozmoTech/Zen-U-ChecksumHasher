@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
+using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher;
@@ -9,26 +9,42 @@ namespace KozmoTech.ZenUtility.ChecksumHasher;
 /// </summary>
 public sealed partial class AppSettingsViewModel : SettingsViewModel
 {
+    public AppSettingsViewModel() : base(AppSettingsStorage.Default)
+    {
+        uiContainer = Storage.RootContainer.EnsureSubContainer(UiSettingsContainerKey);
+    }
+
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
     public string AppName => Package.Current.DisplayName;
 
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
     public PackageVersion AppVersion => Package.Current.Id.Version;
 
     /// <summary>
     /// The current active UI theme applied to the app.
     /// </summary>
-    [ObservableProperty]
-    private ElementTheme uiTheme = ElementTheme.Default;
-
-    /// <summary>
-    /// The current selected theme, which will update the non-<see cref="Nullable"/> <see cref="UITheme"/>. Do not use this property unless in UI bindings.
-    /// </summary>
-    /// <remarks>
-    /// We must use <see cref="object"/> here because there is a <seealso href="https://github.com/microsoft/microsoft-ui-xaml/issues/3268">BUG in WinUI</seealso>;
-    /// so we have to use <see cref="Nullable"/>, however {x:Bind} does not recognize <see cref="Nullable"/>.
-    /// </remarks>
-    public object SelectedTheme
+    public ElementTheme UiTheme
     {
-        get => UiTheme;
-        set => SetProperty(UiTheme, value as ElementTheme? ?? ElementTheme.Default, v => UiTheme = v);
+        get => uiContainer.ReadEnumValue<ElementTheme>(ThemeSettingKey) ?? ElementTheme.Default;
+        set
+        {
+            if (value != UiTheme)
+            {
+                if (value == ElementTheme.Default)
+                {
+                    uiContainer.DeleteValue(ThemeSettingKey);
+                }
+                else
+                {
+                    uiContainer.SaveValue(ThemeSettingKey, value);
+                }
+                OnPropertyChanged();
+            }
+        }
     }
+
+    private readonly ISettingsStorageContainer uiContainer;
+
+    private const string UiSettingsContainerKey = "GUI";
+    private const string ThemeSettingKey = "Theme";
 }

@@ -8,6 +8,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <local:ElementThemeSelectionConverter x:Key="ElementThemeConverter" />
+    </Page.Resources>
+
     <StackPanel Orientation="Vertical">
         <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
 
@@ -32,7 +36,7 @@
                 </RelativePanel>
             </Expander.Header>
 
-            <RadioButtons ItemsSource="{winuiex:EnumValues Type=ElementTheme}" SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" >
+            <RadioButtons ItemsSource="{winuiex:EnumValues Type=ElementTheme}" SelectedItem="{x:Bind ViewModel.UiTheme, Mode=TwoWay, Converter={StaticResource ElementThemeConverter}}">
                 <RadioButtons.ItemTemplate>
                     <DataTemplate x:DataType="ElementTheme">
                         <RadioButton Content="{x:Bind local:SettingsPage.FormatThemeDescription((ElementTheme))}" />

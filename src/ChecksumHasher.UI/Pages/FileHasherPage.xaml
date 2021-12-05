@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="using:KozmoTech.ZenUtility.ChecksumHasher"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
+    xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -33,12 +34,12 @@
             </AppBarElementContainer>
         </CommandBar>
 
-        <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray">
+        <controls:FileDropper Height="180" FilesDropped="FileDropper_FilesDropped">
             <StackPanel>
-                <TextBlock Text="Drag files here" />
-                <Button Content="Browse" Click="BrowseButton_Click" />
+                <TextBlock Text="Drag a single file here" HorizontalAlignment="Center" />
+                <Button Content="Browse" Click="BrowseButton_Click" HorizontalAlignment="Center" />
             </StackPanel>
-        </Border>
+        </controls:FileDropper>
 
         <StackPanel>
             <TextBlock Text="Directory" />
@@ -46,9 +47,7 @@
             <TextBlock Text="FileName" />
             <TextBlock Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}" />
             <TextBlock Text="Icon" />
-            <Border BorderThickness="1" BorderBrush="Green">
-                <Image Source="{x:Bind local:FileHasherPage.ToImageSource(ViewModel.FileInfo.Icon), Mode=OneWay}" Height="128" />
-            </Border>
+            <Image Source="{x:Bind local:FileHasherPage.ToImageSource(ViewModel.FileInfo.Icon), Mode=OneWay}" Height="128" />
             <TextBlock Text="{x:Bind ViewModel.FileInfo.FileType, Mode=OneWay}" />
             <TextBlock Text="Length" />
             <TextBlock Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay, TargetNullValue=}" />

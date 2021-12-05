@@ -1,0 +1,73 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <StaticResource x:Key="FileDropperBorderBrush" ResourceKey="SystemControlForegroundBaseLowBrush" />
+            <StaticResource x:Key="FileDropperBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+            <StaticResource x:Key="FileDropperDragOverBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="FileDropperDragOverBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <StaticResource x:Key="FileDropperBorderBrush" ResourceKey="SystemControlForegroundBaseLowBrush" />
+            <StaticResource x:Key="FileDropperBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+            <StaticResource x:Key="FileDropperDragOverBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="FileDropperDragOverBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="FileDropperBorderBrush" ResourceKey="SystemControlForegroundBaseLowBrush" />
+            <StaticResource x:Key="FileDropperBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+            <StaticResource x:Key="FileDropperDragOverBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="FileDropperDragOverBackgroundBrush" ResourceKey="SystemControlBackgroundChromeMediumBrush" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <Thickness x:Key="FileDropperBorderThemeThickness">1</Thickness>
+    <Thickness x:Key="FileDropperDragOverBorderThemeThickness">2</Thickness>
+
+    <Style TargetType="controls:FileDropper">
+        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+        <Setter Property="BorderThickness" Value="{ThemeResource FileDropperBorderThemeThickness}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource FileDropperBorderBrush}" />
+        <Setter Property="Background" Value="{ThemeResource FileDropperBackgroundBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:FileDropper">
+                    <Border
+                        x:Name="ControlBorder"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        Background="{TemplateBinding Background}">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="DragOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ControlBorder" Storyboard.TargetProperty="BorderThickness">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource FileDropperDragOverBorderThemeThickness}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ControlBorder" Storyboard.TargetProperty="BorderBrush">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource FileDropperDragOverBorderBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ControlBorder" Storyboard.TargetProperty="Background">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource FileDropperDragOverBackgroundBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

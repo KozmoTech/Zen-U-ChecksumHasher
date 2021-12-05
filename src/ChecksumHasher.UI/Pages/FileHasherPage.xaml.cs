@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.WinUI.UI;
+using KozmoTech.ZenUtility.ChecksumHasher.UI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -65,6 +66,16 @@ public sealed partial class FileHasherPage : Page
         Debug.Assert(mainWindow is not null);
         var file = await mainWindow.ShowPickSingleFileDialogAsync(filePicker);
 
+        if (file is not null)
+        {
+            await ComputeHashesAsync(file);
+        }
+    }
+
+    [SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections", Justification = "FirstOrDefault will not hurt much performance")]
+    private async void FileDropper_FilesDropped(object sender, FilesDroppedEventArgs e)
+    {
+        var file = e.Files.FirstOrDefault();
         if (file is not null)
         {
             await ComputeHashesAsync(file);

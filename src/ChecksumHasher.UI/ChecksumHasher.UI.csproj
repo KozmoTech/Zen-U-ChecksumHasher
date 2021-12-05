@@ -17,6 +17,7 @@
   <ItemGroup>
     <None Remove="Pages\FileHasherPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Themes\FileDropper.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,12 +49,20 @@
     <ProjectReference Include="..\ChecksumHasher.Core\ChecksumHasher.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Themes\FileDropper.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Pages\FileHasherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -1,0 +1,56 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <!-- SubtleFillColorSecondaryBrush.Color -->
+            <Color x:Key="TitleBarButtonHoverColor">#09000000</Color>
+            <!-- SubtleFillColorTertiaryBrush.Color -->
+            <Color x:Key="TitleBarButtonPressedColor">#06000000</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <!-- SubtleFillColorSecondaryBrush.Color -->
+            <Color x:Key="TitleBarButtonHoverColor">#0FFFFFFF</Color>
+            <!-- SubtleFillColorTertiaryBrush.Color -->
+            <Color x:Key="TitleBarButtonPressedColor">#0AFFFFFF</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <Color x:Key="TitleBarButtonHoverColor"></Color>
+            <Color x:Key="TitleBarButtonPressedColor"></Color>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <Thickness x:Key="TitleBarTextRightMargin">0,0,138,0</Thickness>
+
+    <Style TargetType="controls:TitleBar">
+        <Setter Property="ButtonForegroundColor" Value="{ThemeResource SystemBaseHighColor}" />
+        <Setter Property="ButtonHoverColor" Value="{ThemeResource TitleBarButtonHoverColor}" />
+        <Setter Property="ButtonPressedColor" Value="{ThemeResource TitleBarButtonPressedColor}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:TitleBar">
+                    <Grid
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Text="{TemplateBinding Title}"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Margin="{StaticResource TitleBarTextRightMargin}"
+                            TextTrimming="CharacterEllipsis" />
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

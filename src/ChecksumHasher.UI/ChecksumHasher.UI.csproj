@@ -18,6 +18,7 @@
     <None Remove="Pages\FileHasherPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Themes\FileDropper.xaml" />
+    <None Remove="Themes\TitleBar.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,6 +64,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\TitleBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

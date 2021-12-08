@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -20,14 +21,18 @@ namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 /// <summary>
 /// A page hosting application runtime settings.
 /// </summary>
-public sealed partial class SettingsPage : Page
+public sealed partial class SettingsPage : Page, IPageWithHeader
 {
     public SettingsPage()
     {
         InitializeComponent();
     }
 
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
     public AppSettingsViewModel ViewModel => Ioc.Default.GetRequiredService<AppSettingsViewModel>();
+
+    public IPageHeaderViewModel HeaderViewModel { get; } = new PageHeaderViewModel("Settings");
+    public DataTemplate HeaderTemplate => PageHeaderTemplate;
 
     public static string FormatThemeDescription(ElementTheme theme) =>
         theme switch

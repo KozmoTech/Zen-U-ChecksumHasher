@@ -10,11 +10,12 @@
 
     <Page.Resources>
         <local:ElementThemeSelectionConverter x:Key="ElementThemeConverter" />
+        <DataTemplate x:Key="PageHeaderTemplate" x:Name="PageHeaderTemplate" x:DataType="local:PageHeaderViewModel">
+            <CommandBar Content="{x:Bind Title}" DefaultLabelPosition="Right" Margin="{StaticResource PageTitleCommandBarMargin}" />
+        </DataTemplate>
     </Page.Resources>
 
     <StackPanel Orientation="Vertical">
-        <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
-
         <TextBlock Text="Appearance" Style="{StaticResource SubtitleTextBlockStyle}" />
         <Expander HorizontalContentAlignment="Left">
             <Expander.Header>

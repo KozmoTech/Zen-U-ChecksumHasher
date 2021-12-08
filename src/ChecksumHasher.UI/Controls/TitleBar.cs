@@ -19,7 +19,7 @@ public sealed class TitleBar : Control
     }
 
     public static readonly DependencyProperty TitleProperty =
-        DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new PropertyMetadata(string.Empty));
+        DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new PropertyMetadata(string.Empty, TitleChanged));
 
     /// <summary>
     /// Get or set the title of the window.
@@ -93,6 +93,7 @@ public sealed class TitleBar : Control
         appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
         appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
+        UpdateWindowTitle();
         UpdateTitleBarButtonForegroundColor();
         UpdateTitleBarButtonHoverColor();
         UpdateTitleBarButtonPressedColor();
@@ -109,6 +110,14 @@ public sealed class TitleBar : Control
         {
             new RectInt32((int)targetRegion.X, (int)targetRegion.Y, (int)targetRegion.Width, (int)targetRegion.Height),
         });
+    }
+
+    private void UpdateWindowTitle()
+    {
+        if (appWindow is not null)
+        {
+            appWindow.Title = Title;
+        }
     }
 
     private void UpdateTitleBarButtonForegroundColor()
@@ -137,6 +146,8 @@ public sealed class TitleBar : Control
             appWindow.TitleBar.ButtonPressedBackgroundColor = ToTitleBarColor(ButtonPressedColor);
         }
     }
+
+    private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar) d).UpdateWindowTitle();
 
     private static void ButtonForegroundColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar)d).UpdateTitleBarButtonForegroundColor();
 

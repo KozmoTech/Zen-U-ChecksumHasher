@@ -6,12 +6,19 @@
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Title="{x:Bind SettingsViewModel.AppName}">
+    mc:Ignorable="d">
 
-    <Grid x:Name="RootUIContent" RequestedTheme="{x:Bind SettingsViewModel.UiTheme, Mode=OneWay}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid
+        x:Name="RootUIContent"
+        RequestedTheme="{x:Bind SettingsViewModel.UiTheme, Mode=OneWay}"
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
         <Grid.Resources>
+            <!-- NavigationBackButtonHeight (36) + BackButtonMargin (2 + 2) + NavigationViewButtonHolderGridMargin (4 + 4) == 48 -->
+            <x:Double x:Key="MainWindowTitleBarHeight">48</x:Double>
             <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+            <!-- NavigationViewCompactPaneLength == 48 -->
+            <Thickness x:Key="MainWindowTitleBarMarginWithNavigationView">48,0,0,0</Thickness>
         </Grid.Resources>
 
         <controls:TitleBar
@@ -19,11 +26,15 @@
             VerticalAlignment="Top"
             Canvas.ZIndex="100"
             Title="{x:Bind SettingsViewModel.AppName}"
-            Height="48" Margin="48,0,0,0" />
+            Height="{StaticResource MainWindowTitleBarHeight}"
+            Margin="{StaticResource MainWindowTitleBarMarginWithNavigationView}" />
 
         <NavigationView
+            x:Name="MainNavigation"
             PaneDisplayMode="LeftCompact"
-            SelectionChanged="NavigationView_SelectionChanged">
+            AlwaysShowHeader="True"
+            SelectionChanged="MainNavigation_SelectionChanged"
+            BackRequested="MainNavigation_BackRequested">
 
             <NavigationView.Resources>
                 <local:SupportedPageType x:Key="FileHasherPageTag">FileHasher</local:SupportedPageType>
@@ -33,7 +44,9 @@
                 <NavigationViewItem Icon="OpenFile" Content="File Checksum" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" />
+            <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated" Padding="{StaticResource PageContentPadding}" />
+            </ScrollViewer>
         </NavigationView>
     </Grid>
 </Window>

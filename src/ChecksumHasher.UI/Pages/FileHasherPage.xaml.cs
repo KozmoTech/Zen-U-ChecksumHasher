@@ -25,11 +25,12 @@ namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 /// <summary>
 /// A page used to calculate and compare file checksums.
 /// </summary>
-public sealed partial class FileHasherPage : Page
+public sealed partial class FileHasherPage : Page, IPageWithHeader
 {
     public FileHasherPage()
     {
         InitializeComponent();
+        HeaderViewModel = new FileHasherPageHeaderViewModel("File Checksum", ViewModel);
         SortedHashers = new(ViewModel.Hashers, true)
         {
             SortDescriptions =
@@ -41,6 +42,9 @@ public sealed partial class FileHasherPage : Page
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
     public FileHasherViewModel ViewModel => Ioc.Default.GetRequiredService<FileHasherViewModel>();
+
+    public IPageHeaderViewModel HeaderViewModel { get; }
+    public DataTemplate HeaderTemplate => PageHeaderTemplate;
 
     public AdvancedCollectionView SortedHashers { get; }
 
@@ -91,3 +95,5 @@ public sealed partial class FileHasherPage : Page
             ViewModel.ComputeAllHashesCommand.ExecuteAsync(null));
     }
 }
+
+public sealed record class FileHasherPageHeaderViewModel(string Title, FileHasherViewModel PageViewModel) : PageHeaderViewModel(Title);

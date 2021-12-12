@@ -11,7 +11,11 @@
     <Page.Resources>
         <local:ElementThemeSelectionConverter x:Key="ElementThemeConverter" />
         <DataTemplate x:Key="PageHeaderTemplate" x:Name="PageHeaderTemplate" x:DataType="local:PageHeaderViewModel">
-            <CommandBar Content="{x:Bind Title}" DefaultLabelPosition="Right" Margin="{StaticResource PageTitleCommandBarMargin}" />
+            <CommandBar
+                Content="{x:Bind Title}"
+                Margin="{StaticResource PageTitleCommandBarMargin}"
+                VerticalContentAlignment="Center"
+                DefaultLabelPosition="Right" />
         </DataTemplate>
     </Page.Resources>
 

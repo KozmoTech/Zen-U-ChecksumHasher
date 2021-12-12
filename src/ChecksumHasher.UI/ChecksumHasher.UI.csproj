@@ -15,9 +15,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="CommonStyles\GeneralStyles.xaml" />
     <None Remove="Pages\FileHasherPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Themes\AppBarDropDownButton.xaml" />
     <None Remove="Themes\FileDropper.xaml" />
     <None Remove="Themes\TitleBar.xaml" />
   </ItemGroup>
@@ -51,6 +51,11 @@
     <ProjectReference Include="..\ChecksumHasher.Core\ChecksumHasher.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Themes\AppBarDropDownButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Themes\FileDropper.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -70,11 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Themes\TitleBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="CommonStyles\GeneralStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

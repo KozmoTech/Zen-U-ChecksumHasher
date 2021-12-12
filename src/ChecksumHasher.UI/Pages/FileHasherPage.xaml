@@ -11,31 +11,36 @@
 
     <Page.Resources>
         <DataTemplate x:Key="PageHeaderTemplate" x:Name="PageHeaderTemplate" x:DataType="local:FileHasherPageHeaderViewModel">
-            <CommandBar Content="{x:Bind Title}" DefaultLabelPosition="Right" Margin="{StaticResource PageTitleCommandBarMargin}">
+            <!-- We disable the overflow because of a bug in AppBarButton: https://github.com/microsoft/microsoft-ui-xaml/issues/6450 -->
+            <CommandBar
+                Content="{x:Bind Title}"
+                Margin="{StaticResource PageTitleCommandBarMargin}"
+                VerticalContentAlignment="Center"
+                DefaultLabelPosition="Right"
+                IsDynamicOverflowEnabled="True">
+
                 <CommandBar.SecondaryCommands>
                     <AppBarButton Icon="Refresh" Label="Recalculate" />
                 </CommandBar.SecondaryCommands>
 
                 <AppBarButton Icon="BrowsePhotos" Label="Browse" Click="BrowseButton_Click" />
-                <AppBarElementContainer>
-                    <DropDownButton Content="Algorithms">
-                        <DropDownButton.Flyout>
-                            <!-- The display shadow is buggy: https://github.com/microsoft/microsoft-ui-xaml/issues/6206 -->
-                            <MenuFlyout>
-                                <ToggleMenuFlyoutItem Text="MD5" IsChecked="{x:Bind PageViewModel.UseMD5, Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="SHA1" IsChecked="{x:Bind PageViewModel.UseSHA1, Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="SHA-256" IsChecked="{x:Bind PageViewModel.UseSHA256, Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="SHA-512" IsChecked="{x:Bind PageViewModel.UseSHA512, Mode=TwoWay}" />
-                            </MenuFlyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-                </AppBarElementContainer>
+                <controls:AppBarDropDownButton Icon="Calculator" Label="Algorithms">
+                    <controls:AppBarDropDownButton.Flyout>
+                        <!-- The display shadow is buggy: https://github.com/microsoft/microsoft-ui-xaml/issues/6206 -->
+                        <MenuFlyout>
+                            <ToggleMenuFlyoutItem Text="MD5" IsChecked="{x:Bind PageViewModel.UseMD5, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA1" IsChecked="{x:Bind PageViewModel.UseSHA1, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA-256" IsChecked="{x:Bind PageViewModel.UseSHA256, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA-512" IsChecked="{x:Bind PageViewModel.UseSHA512, Mode=TwoWay}" />
+                        </MenuFlyout>
+                    </controls:AppBarDropDownButton.Flyout>
+                </controls:AppBarDropDownButton>
             </CommandBar>
         </DataTemplate>
     </Page.Resources>
 
     <StackPanel Orientation="Vertical">
-        <controls:FileDropper Height="180" FilesDropped="FileDropper_FilesDropped" Margin="0,8">
+        <controls:FileDropper Height="300" FilesDropped="FileDropper_FilesDropped" Margin="0,8">
             <StackPanel>
                 <TextBlock Text="Drag a single file here" HorizontalAlignment="Center" />
                 <Button Content="Browse" Click="BrowseButton_Click" HorizontalAlignment="Center" />
@@ -58,11 +63,11 @@
             <TextBlock Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay}" />
             <Button Content="Cancel Computing" IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}" Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}" />
         </StackPanel>
-        
-        <ItemsRepeater ItemsSource="{x:Bind SortedHashers, Mode=OneWay}">
+
+        <ItemsRepeater ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
-                    <Expander>
+                    <Expander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                         <Expander.Header>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{x:Bind Algorithm}" />
@@ -73,7 +78,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="File Checksum" />
                             <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
-                            <TextBlock Text="Target" />
+                            <TextBlock Text="Target to Compare" />
                             <TextBox />
                         </StackPanel>
                     </Expander>

@@ -7,8 +7,14 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary Source="/CommonStyles/GeneralStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Page Styles -->
+            <Thickness x:Key="PageTitleCommandBarMargin">40,0,38,0</Thickness>
+            <Thickness x:Key="PageContentPadding">44,4,44,48</Thickness>
+
+            <!-- WinUI Overrides -->
+            <Thickness x:Key="NavigationViewHeaderMargin">0,32,0,8</Thickness>
         </ResourceDictionary>
     </Application.Resources>
 

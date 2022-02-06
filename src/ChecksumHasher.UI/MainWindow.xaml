@@ -44,7 +44,14 @@
                 <NavigationViewItem Icon="OpenFile" Content="File Checksum" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
             </NavigationView.MenuItems>
 
-            <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer
+                VerticalScrollMode="Auto"
+                VerticalScrollBarVisibility="Auto"
+                IsVerticalRailEnabled="True"
+                HorizontalScrollMode="Disabled"
+                HorizontalScrollBarVisibility="Disabled"
+                IsHorizontalRailEnabled="False">
+
                 <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated" Padding="{StaticResource PageContentPadding}" />
             </ScrollViewer>
         </NavigationView>

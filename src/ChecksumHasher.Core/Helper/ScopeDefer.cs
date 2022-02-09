@@ -8,7 +8,7 @@
 /// using var defer = new ScopeDefer(() => ...);
 /// </code>
 /// </example>
-internal sealed class ScopeDefer : IDisposable, IDisposableManaged
+public sealed class ScopeDefer : IDisposable, IDisposableManaged
 {
     public ScopeDefer(Action disposing)
     {

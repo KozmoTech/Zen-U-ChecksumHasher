@@ -5,11 +5,15 @@
     xmlns:core="using:KozmoTech.ZenUtility.ChecksumHasher"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <Page.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter" />
+        <local:PercentageDoubleConverter x:Key="PercentageDoubleConverter" />
+
         <DataTemplate x:Key="PageHeaderTemplate" x:Name="PageHeaderTemplate" x:DataType="local:FileHasherPageHeaderViewModel">
             <!-- We disable the overflow because of a bug in AppBarButton: https://github.com/microsoft/microsoft-ui-xaml/issues/6450 -->
             <CommandBar
@@ -23,67 +27,280 @@
                     <AppBarButton Icon="Refresh" Label="Recalculate" />
                 </CommandBar.SecondaryCommands>
 
-                <AppBarButton Icon="BrowsePhotos" Label="Browse" Click="BrowseButton_Click" />
+                <AppBarButton Icon="BrowsePhotos" Label="{x:Bind local:FileHasherPage.PickFileButtonText(Page.CurrentVisualState), Mode=OneWay}" Click="BrowseButton_Click" />
                 <controls:AppBarDropDownButton Icon="Calculator" Label="Algorithms">
                     <controls:AppBarDropDownButton.Flyout>
                         <!-- The display shadow is buggy: https://github.com/microsoft/microsoft-ui-xaml/issues/6206 -->
                         <MenuFlyout>
-                            <ToggleMenuFlyoutItem Text="MD5" IsChecked="{x:Bind PageViewModel.UseMD5, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA1" IsChecked="{x:Bind PageViewModel.UseSHA1, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA-256" IsChecked="{x:Bind PageViewModel.UseSHA256, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA-512" IsChecked="{x:Bind PageViewModel.UseSHA512, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="MD5" IsChecked="{x:Bind Page.ViewModel.UseMD5, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA1" IsChecked="{x:Bind Page.ViewModel.UseSHA1, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA-256" IsChecked="{x:Bind Page.ViewModel.UseSHA256, Mode=TwoWay}" />
+                            <ToggleMenuFlyoutItem Text="SHA-512" IsChecked="{x:Bind Page.ViewModel.UseSHA512, Mode=TwoWay}" />
                         </MenuFlyout>
                     </controls:AppBarDropDownButton.Flyout>
                 </controls:AppBarDropDownButton>
             </CommandBar>
         </DataTemplate>
+
+        <Style x:Key="FilePropertyTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="FilePropertyValueStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            <Setter Property="TextTrimming" Value="Clip" />
+        </Style>
     </Page.Resources>
 
-    <StackPanel Orientation="Vertical">
-        <controls:FileDropper Height="300" FilesDropped="FileDropper_FilesDropped" Margin="0,8">
+    <Grid
+        x:Name="RootContent"
+        Background="Transparent"
+        DragEnter="RootContent_DragEnter"
+        DragLeave="RootContent_DragLeave">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="PageStates">
+                <VisualStateGroup.States>
+                    <VisualState x:Name="NoFilesSelected" />
+                    <VisualState x:Name="LoadingFileMetadata">
+                        <VisualState.Setters>
+                            <Setter Target="FileDetails.Visibility" Value="Visible" />
+                            <Setter Target="FileIcon.Visibility" Value="Collapsed" />
+                            <Setter Target="ComputingProgress.Visibility" Value="Visible" />
+                            <Setter Target="ComputingProgress.IsIndeterminate" Value="True" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ComputingHash">
+                        <VisualState.Setters>
+                            <Setter Target="FileDetails.Visibility" Value="Visible" />
+                            <Setter Target="FileIcon.Visibility" Value="Collapsed" />
+                            <Setter Target="ComputingProgress.Visibility" Value="Visible" />
+                            <Setter Target="ComputingPercentage.Visibility" Value="Visible" />
+                            <Setter Target="RemainingTimeText.Visibility" Value="Visible" />
+                            <Setter Target="CancelComputing.Visibility" Value="Visible" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="HashCompleted">
+                        <VisualState.Setters>
+                            <Setter Target="RootContent.AllowDrop" Value="True" />
+                            <Setter Target="FileDetails.Visibility" Value="Visible" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup.States>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="FileDragStates">
+                <VisualStateGroup.States>
+                    <VisualState x:Name="AlwaysShowFileDropper" />
+                    <VisualState x:Name="HideFileDropper">
+                        <VisualState.Setters>
+                            <Setter Target="FileDropper.Visibility" Value="Collapsed" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ShowFileDropperOverlay">
+                        <VisualState.Setters>
+                            <Setter Target="FileDropper.Opacity" Value="0.9" />
+                            <Setter Target="FileDropper.Height" Value="Auto" />
+                            <Setter Target="PickFileButtonSeparator.Visibility" Value="Collapsed" />
+                            <Setter Target="PickFileButton.Visibility" Value="Collapsed" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup.States>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- File Details Sheet, overlapped with File Dropper -->
+        <Grid
+            x:Name="FileDetails"
+            Margin="0,8,0,16"
+            Padding="0,12,0,20"
+            HorizontalAlignment="Center"
+            RowSpacing="12"
+            ColumnSpacing="32"
+            Visibility="Collapsed">
+
+            <Grid.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource FilePropertyValueStyle}" />
+            </Grid.Resources>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image
+                x:Name="FileIcon"
+                Source="{x:Bind local:FileHasherPage.ToImageSource(ViewModel.FileInfo.Icon), Mode=OneWay}"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.RowSpan="7"
+                VerticalAlignment="Top"
+                Margin="0,8,12,0"
+                Height="128" />
+
+            <Grid
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.RowSpan="7"
+                VerticalAlignment="Top"
+                Margin="0,8,12,0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- ProgressRing does not support thickness yet: https://github.com/microsoft/microsoft-ui-xaml/issues/3293 -->
+                <ProgressRing
+                    x:Name="ComputingProgress"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="{x:Bind ViewModel.OverallProgress, Mode=OneWay}"
+                    Width="120"
+                    Height="120"
+                    IsIndeterminate="False"
+                    Visibility="Collapsed" />
+
+                <TextBlock
+                    x:Name="ComputingPercentage"
+                    Text="{x:Bind ViewModel.OverallProgress, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    FontWeight="Normal"
+                    Visibility="Collapsed" />
+
+                <TextBlock
+                    x:Name="RemainingTimeText"
+                    Grid.Row="1"
+                    Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='About {0} remaining'}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Visibility="Collapsed" />
+
+                <Button
+                    x:Name="CancelComputing"
+                    Content="Cancel Computing"
+                    IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}"
+                    Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Visibility="Collapsed" />
+            </Grid>
+
+            <TextBlock
+                Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}"
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Margin="0,0,0,8"
+                IsTextSelectionEnabled="True"
+                Style="{StaticResource SubtitleTextBlockStyle}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="Location" Style="{StaticResource FilePropertyTitleStyle}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{x:Bind ViewModel.FileInfo.DirectoryPath, Mode=OneWay}" IsTextSelectionEnabled="True" />
+
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="File Type" Style="{StaticResource FilePropertyTitleStyle}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="{x:Bind ViewModel.FileInfo.FileType, Mode=OneWay}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="Size" Style="{StaticResource FilePropertyTitleStyle}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay, TargetNullValue=}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="Date Created" Style="{StaticResource FilePropertyTitleStyle}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" Text="{x:Bind ViewModel.FileInfo.CreatedAt, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:F}'}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="Date Modified" Style="{StaticResource FilePropertyTitleStyle}" />
+            <TextBlock Grid.Row="5" Grid.Column="2" Text="{x:Bind ViewModel.FileInfo.ModifiedAt, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:F}'}" />
+        </Grid>
+
+        <!-- File Dropper Rectangle -->
+        <controls:FileDropper
+            x:Name="FileDropper"
+            Height="300"
+            Margin="2,12,2,36"
+            FilesDropped="FileDropper_FilesDropped">
+
             <StackPanel>
-                <TextBlock Text="Drag a single file here" HorizontalAlignment="Center" />
-                <Button Content="Browse" Click="BrowseButton_Click" HorizontalAlignment="Center" />
+                <Viewbox Width="32" Height="32" HorizontalAlignment="Center" Margin="8">
+                    <SymbolIcon Symbol="Upload" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                </Viewbox>
+                <TextBlock
+                    Text="Drag and Drop a Single File Here"
+                    HorizontalAlignment="Center"
+                    Margin="12,12,12,0"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    FontSize="24"
+                    FontWeight="Light" />
+                <TextBlock
+                    x:Name="PickFileButtonSeparator"
+                    Text="or"
+                    HorizontalAlignment="Center"
+                    Margin="12,24,12,12"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}" />
+                <Button
+                    x:Name="PickFileButton"
+                    Content="Pick a File"
+                    Click="BrowseButton_Click"
+                    HorizontalAlignment="Center" />
             </StackPanel>
         </controls:FileDropper>
 
-        <StackPanel>
-            <TextBlock Text="Directory" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.DirectoryPath, Mode=OneWay}" />
-            <TextBlock Text="FileName" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.FileName, Mode=OneWay}" />
-            <TextBlock Text="Icon" />
-            <Image Source="{x:Bind local:FileHasherPage.ToImageSource(ViewModel.FileInfo.Icon), Mode=OneWay}" Height="128" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.FileType, Mode=OneWay}" />
-            <TextBlock Text="Length" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.TotalLength, Mode=OneWay, TargetNullValue=}" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.CreatedAt, Mode=OneWay}" />
-            <TextBlock Text="{x:Bind ViewModel.FileInfo.ModifiedAt, Mode=OneWay}" />
-            <TextBlock Text="{x:Bind ViewModel.OverallProgress, Mode=OneWay}" />
-            <TextBlock Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay}" />
-            <Button Content="Cancel Computing" IsEnabled="{x:Bind ViewModel.ComputeAllHashesCommand.CanBeCanceled, Mode=OneWay}" Click="{x:Bind ViewModel.ComputeAllHashesCommand.Cancel}" />
-        </StackPanel>
+        <!-- Hash Comparison -->
+        <Expander
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            Margin="0,0,0,20">
 
-        <ItemsRepeater ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
+            <Expander.Header>
+                <TextBlock Text="Verification" />
+            </Expander.Header>
+
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Hash to Compare" />
+                <TextBox />
+            </StackPanel>
+        </Expander>
+
+        <!-- Hash Results -->
+        <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
                     <Expander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                         <Expander.Header>
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{x:Bind Algorithm}" />
-                                <TextBlock Text="{x:Bind ComputeProgress, Mode=OneWay}" />
-                            </StackPanel>
+                            <RelativePanel>
+                                <Viewbox x:Name="Icon" Width="28" Height="28" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="0,4,12,4">
+                                    <SymbolIcon Symbol="SetLockScreen" />
+                                </Viewbox>
+                                <TextBlock x:Name="Title" Text="{x:Bind Algorithm}" RelativePanel.RightOf="Icon" />
+                                <ProgressBar x:Name="ItemProgress" Maximum="1" Value="{x:Bind ComputeProgress, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}" RelativePanel.RightOf="Icon" RelativePanel.Below="Title" Width="200" />
+                                <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" RelativePanel.RightOf="ItemProgress" RelativePanel.Below="Title" />
+                                <Button Content="Copy" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
+                            </RelativePanel>
                         </Expander.Header>
-
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="File Checksum" />
-                            <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
-                            <TextBlock Text="Target to Compare" />
-                            <TextBox />
-                        </StackPanel>
                     </Expander>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>
-    </StackPanel>
+    </Grid>
 </Page>

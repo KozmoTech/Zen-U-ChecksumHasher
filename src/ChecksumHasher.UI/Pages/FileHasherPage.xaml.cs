@@ -1,22 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.WinUI.UI;
 using KozmoTech.ZenUtility.ChecksumHasher.UI.Controls;
+using KozmoTech.ZenUtility.System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -30,7 +20,7 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
     public FileHasherPage()
     {
         InitializeComponent();
-        HeaderViewModel = new FileHasherPageHeaderViewModel("File Checksum", ViewModel);
+        HeaderViewModel = new FileHasherPageHeaderViewModel("File Checksum", this);
         SortedHashers = new(ViewModel.Hashers, true)
         {
             SortDescriptions =
@@ -38,6 +28,7 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
                 new SortDescription(nameof(HashCalculatorViewModel.Algorithm), SortDirection.Ascending),
             },
         };
+        CurrentVisualState = PageVisualState.Initial;
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
@@ -48,6 +39,15 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
 
     public AdvancedCollectionView SortedHashers { get; }
 
+    public static readonly DependencyProperty CurrentVisualStateProperty =
+        DependencyProperty.Register(nameof(CurrentVisualState), typeof(PageVisualState), typeof(FileHasherPage), new(PageVisualState.Unknown, CurrentVisualStateChanged));
+
+    public PageVisualState CurrentVisualState
+    {
+        get => (PageVisualState)GetValue(CurrentVisualStateProperty);
+        set => SetValue(CurrentVisualStateProperty, value);
+    }
+
     public static ImageSource ToImageSource(IPicture picture) =>
         picture switch
         {
@@ -55,6 +55,22 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
             BitmapPicture bitmap => bitmap.Image,
             _ => throw new NotSupportedException($"{picture.GetType()} is not supported"),
         };
+
+    public static string PickFileButtonText(PageVisualState state) => state == PageVisualState.Initial ? "Pick a File" : "Pick another File";
+
+    private static void CurrentVisualStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+        VisualStateManager.GoToState((FileHasherPage)d, (PageVisualState)e.NewValue switch
+        {
+            PageVisualState.Initial => nameof(NoFilesSelected),
+            PageVisualState.Loading => nameof(LoadingFileMetadata),
+            PageVisualState.Computing => nameof(ComputingHash),
+            PageVisualState.Computed => nameof(HashCompleted),
+            _ => throw new NotSupportedException($"{e.NewValue} state is not supported"),
+        }, true);
+
+    // DragEnter and DragLeave will only be fired when RootContent.AllowDrop = True, which is set when "HashCompleted"
+    private void RootContent_DragEnter(object sender, DragEventArgs e) => VisualStateManager.GoToState(this, nameof(ShowFileDropperOverlay), true);
+    private void RootContent_DragLeave(object sender, DragEventArgs e) => VisualStateManager.GoToState(this, nameof(HideFileDropper), true);
 
     private async void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
@@ -88,12 +104,29 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
 
     private async Task ComputeHashesAsync(StorageFile file)
     {
+        // RootContent.DragLeave will not be fired when file is dropped
+        VisualStateManager.GoToState(this, nameof(HideFileDropper), true);
+
+        CurrentVisualState = PageVisualState.Loading;
         ViewModel.FileInfo = new FileInfoViewModel(new WindowsFileInfo(file));
-        await ViewModel.FileInfo.RefreshPropertiesAsync();
-        await Task.WhenAll(
-            ViewModel.FileInfo.RefreshNonessentialPropertiesAsync(),
-            ViewModel.ComputeAllHashesCommand.ExecuteAsync(null));
+
+        using (new ScopeDefer(() => CurrentVisualState = PageVisualState.Computing))
+        {
+            await ViewModel.FileInfo.RefreshPropertiesAsync();
+        }
+
+        using (new ScopeDefer(() => CurrentVisualState = PageVisualState.Computed))
+        {
+            await Task.WhenAll(
+                ViewModel.FileInfo.RefreshNonessentialPropertiesAsync(),
+                ViewModel.ComputeAllHashesCommand.ExecuteAsync(null));
+        }
+    }
+
+    public enum PageVisualState
+    {
+        Unknown, Initial, Loading, Computing, Computed
     }
 }
 
-public sealed record class FileHasherPageHeaderViewModel(string Title, FileHasherViewModel PageViewModel) : PageHeaderViewModel(Title);
+public sealed record class FileHasherPageHeaderViewModel(string Title, FileHasherPage Page) : PageHeaderViewModel(Title);

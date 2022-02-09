@@ -53,5 +53,7 @@
         <TextBlock Text="About" Style="{StaticResource SubtitleTextBlockStyle}" />
         <TextBlock Text="{x:Bind local:SettingsPage.FormatAppNameAndVersion(ViewModel.AppName, ViewModel.AppVersion, ViewModel.CoreVersion)}" />
         <TextBlock Text="(c) 2021" />
+
+        <Button Content="Send Feedback" />
     </StackPanel>
 </Page>

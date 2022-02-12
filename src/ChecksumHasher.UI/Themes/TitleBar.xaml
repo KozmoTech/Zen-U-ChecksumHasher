@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <Thickness x:Key="TitleBarTextRightMargin">0,0,138,0</Thickness>
+    <Thickness x:Key="TitleBarTextMargin">0,0,138,2</Thickness>
 
     <Style TargetType="controls:TitleBar">
         <Setter Property="ButtonForegroundColor" Value="{ThemeResource SystemBaseHighColor}" />
@@ -43,7 +43,7 @@
 
                         <Image
                             Source="ms-appx:///Assets/Square44x44Logo.targetsize-24_altform-unplated.png"
-                            Margin="12,2,12,0"
+                            Margin="4,0,12,0"
                             Width="20"
                             Height="20"
                             VerticalAlignment="Center" />
@@ -52,7 +52,7 @@
                             Text="{TemplateBinding Title}"
                             Grid.Column="1"
                             VerticalAlignment="Center"
-                            Margin="{StaticResource TitleBarTextRightMargin}"
+                            Margin="{StaticResource TitleBarTextMargin}"
                             TextTrimming="CharacterEllipsis" />
                     </Grid>
                 </ControlTemplate>

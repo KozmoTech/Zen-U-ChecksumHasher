@@ -266,39 +266,44 @@
         </controls:FileDropper>
 
         <!-- Hash Comparison -->
-        <Expander
+        <controls:CardExpander
             Grid.Row="1"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
-            Margin="0,0,0,20">
+            Margin="0,0,0,12">
 
-            <Expander.Header>
-                <TextBlock Text="Verification" />
-            </Expander.Header>
+            <controls:CardExpander.Header>
+                <RelativePanel>
+                    <Viewbox x:Name="Icon" Width="20" Height="20" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="2,0,20,0">
+                        <SymbolIcon Symbol="Accept" />
+                    </Viewbox>
+                    <TextBlock Text="Verification" RelativePanel.RightOf="Icon" />
+                </RelativePanel>
+            </controls:CardExpander.Header>
 
             <StackPanel Orientation="Vertical">
                 <TextBlock Text="Hash to Compare" />
                 <TextBox />
             </StackPanel>
-        </Expander>
+        </controls:CardExpander>
 
         <!-- Hash Results -->
         <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
-                    <Expander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                        <Expander.Header>
+                    <controls:CardExpander Margin="0,0,0,3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <controls:CardExpander.Header>
                             <RelativePanel>
-                                <Viewbox x:Name="Icon" Width="28" Height="28" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="0,4,12,4">
-                                    <SymbolIcon Symbol="SetLockScreen" />
+                                <Viewbox x:Name="Icon" Width="20" Height="20" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="2,0,20,0">
+                                    <SymbolIcon Symbol="Font" />
                                 </Viewbox>
                                 <TextBlock x:Name="Title" Text="{x:Bind Algorithm}" RelativePanel.RightOf="Icon" />
                                 <ProgressBar x:Name="ItemProgress" Maximum="1" Value="{x:Bind ComputeProgress, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}" RelativePanel.RightOf="Icon" RelativePanel.Below="Title" Width="200" />
                                 <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" RelativePanel.RightOf="ItemProgress" RelativePanel.Below="Title" />
                                 <Button Content="Copy" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
                             </RelativePanel>
-                        </Expander.Header>
-                    </Expander>
+                        </controls:CardExpander.Header>
+                    </controls:CardExpander>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

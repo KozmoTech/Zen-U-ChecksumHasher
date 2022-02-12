@@ -135,6 +135,7 @@ public sealed class TitleBar : Control
     {
         if (appWindow is not null)
         {
+            // TODO: can use CommunityToolkit.WinUI.UI.TitleBarExtensions here
             appWindow.TitleBar.ButtonHoverBackgroundColor = ToTitleBarColor(ButtonHoverColor);
         }
     }

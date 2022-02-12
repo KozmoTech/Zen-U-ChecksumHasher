@@ -18,6 +18,7 @@
     <None Remove="Pages\FileHasherPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Themes\AppBarDropDownButton.xaml" />
+    <None Remove="Themes\CardExpander.xaml" />
     <None Remove="Themes\FileDropper.xaml" />
     <None Remove="Themes\TitleBar.xaml" />
   </ItemGroup>
@@ -49,6 +50,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ChecksumHasher.Core\ChecksumHasher.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\CardExpander.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Themes\AppBarDropDownButton.xaml">

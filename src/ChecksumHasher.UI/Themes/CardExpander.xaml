@@ -17,7 +17,9 @@
     </ResourceDictionary.ThemeDictionaries>
 
     <x:Double x:Key="CardExpanderMinHeight">68</x:Double>
-    <Thickness x:Key="PlainExpanderHeaderPadding">16,0</Thickness>
+    <Thickness x:Key="CardExpanderHeaderPadding">16,12,0,12</Thickness>
+    <Thickness x:Key="PlainExpanderHeaderPadding">16,12</Thickness>
+    <Thickness x:Key="CardExpanderChevronMargin">8,0,8,0</Thickness>
     <x:Double x:Key="CardExpanderChevronGlyphSize">16</x:Double>
     <x:Double x:Key="CardExpanderChevronGlyphFontSize">16</x:Double>
 
@@ -28,7 +30,7 @@
         <Setter Property="Foreground" Value="{ThemeResource ExpanderHeaderForeground}" />
         <Setter Property="HorizontalContentAlignment" Value="{StaticResource ExpanderHeaderHorizontalContentAlignment}" />
         <Setter Property="VerticalContentAlignment" Value="{StaticResource ExpanderHeaderVerticalContentAlignment}" />
-        <Setter Property="Padding" Value="{StaticResource ExpanderHeaderPadding}" />
+        <Setter Property="Padding" Value="{StaticResource CardExpanderHeaderPadding}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -127,7 +129,7 @@
                             CornerRadius="{ThemeResource ControlCornerRadius}"
                             Width="{ThemeResource ExpanderChevronButtonSize}"
                             Height="{ThemeResource ExpanderChevronButtonSize}"
-                            Margin="{ThemeResource ExpanderChevronMargin}">
+                            Margin="{ThemeResource CardExpanderChevronMargin}">
 
                             <AnimatedIcon
                                 x:Name="ExpandCollapseChevron"

@@ -18,8 +18,7 @@ public sealed class TitleBar : Control
         SizeChanged += TitleBar_SizeChanged;
     }
 
-    public static readonly DependencyProperty TitleProperty =
-        DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new PropertyMetadata(string.Empty, TitleChanged));
+    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new(string.Empty, TitleChanged));
 
     /// <summary>
     /// Get or set the title of the window.
@@ -31,7 +30,7 @@ public sealed class TitleBar : Control
     }
 
     public static readonly DependencyProperty ButtonForegroundColorProperty =
-        DependencyProperty.Register(nameof(ButtonForegroundColor), typeof(Color), typeof(TitleBar), new PropertyMetadata(null, ButtonForegroundColorChanged));
+        DependencyProperty.Register(nameof(ButtonForegroundColor), typeof(Color), typeof(TitleBar), new(null, ButtonForegroundColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons foreground color. <c>new Color()</c> means default value.
@@ -42,8 +41,7 @@ public sealed class TitleBar : Control
         set => SetValue(ButtonForegroundColorProperty, value);
     }
 
-    public static readonly DependencyProperty ButtonHoverColorProperty =
-        DependencyProperty.Register(nameof(ButtonHoverColor), typeof(Color), typeof(TitleBar), new PropertyMetadata(null, ButtoHoverColorChanged));
+    public static readonly DependencyProperty ButtonHoverColorProperty = DependencyProperty.Register(nameof(ButtonHoverColor), typeof(Color), typeof(TitleBar), new(null, ButtoHoverColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons hover background color. <c>new Color()</c> means default value.
@@ -55,7 +53,7 @@ public sealed class TitleBar : Control
     }
 
     public static readonly DependencyProperty ButtonPressedColorProperty =
-        DependencyProperty.Register(nameof(ButtonPressedColor), typeof(Color), typeof(TitleBar), new PropertyMetadata(null, ButtoPressedColorChanged));
+        DependencyProperty.Register(nameof(ButtonPressedColor), typeof(Color), typeof(TitleBar), new(null, ButtoPressedColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons pressed background color. <c>new Color()</c> means default value.

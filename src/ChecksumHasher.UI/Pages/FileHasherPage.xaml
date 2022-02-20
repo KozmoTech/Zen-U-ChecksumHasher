@@ -273,12 +273,17 @@
             Margin="0,0,0,12">
 
             <controls:CardExpander.Header>
-                <RelativePanel>
-                    <Viewbox x:Name="Icon" Width="20" Height="20" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="2,0,20,0">
-                        <SymbolIcon Symbol="Accept" />
-                    </Viewbox>
-                    <TextBlock Text="Verification" RelativePanel.RightOf="Icon" />
-                </RelativePanel>
+                <local:SettingItemHeader>
+                    <local:SettingItemHeader.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE928;" />
+                    </local:SettingItemHeader.Icon>
+                    <local:SettingItemHeader.Title>
+                        <TextBlock Text="Verification" />
+                    </local:SettingItemHeader.Title>
+                    <local:SettingItemHeader.SubTitle>
+                        <TextBlock Text="Validate the content through a raw checksum or a signature file." />
+                    </local:SettingItemHeader.SubTitle>
+                </local:SettingItemHeader>
             </controls:CardExpander.Header>
 
             <StackPanel Orientation="Vertical">
@@ -291,17 +296,25 @@
         <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
-                    <controls:CardExpander Margin="0,0,0,3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    <controls:CardExpander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                         <controls:CardExpander.Header>
-                            <RelativePanel>
-                                <Viewbox x:Name="Icon" Width="20" Height="20" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="2,0,20,0">
-                                    <SymbolIcon Symbol="Font" />
-                                </Viewbox>
-                                <TextBlock x:Name="Title" Text="{x:Bind Algorithm}" RelativePanel.RightOf="Icon" />
-                                <ProgressBar x:Name="ItemProgress" Maximum="1" Value="{x:Bind ComputeProgress, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}" RelativePanel.RightOf="Icon" RelativePanel.Below="Title" Width="200" />
-                                <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" RelativePanel.RightOf="ItemProgress" RelativePanel.Below="Title" />
-                                <Button Content="Copy" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
-                            </RelativePanel>
+                            <local:SettingItemHeader>
+                                <local:SettingItemHeader.Icon>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE950;" />
+                                </local:SettingItemHeader.Icon>
+                                <local:SettingItemHeader.Title>
+                                    <TextBlock Text="{x:Bind Algorithm}" />
+                                </local:SettingItemHeader.Title>
+                                <local:SettingItemHeader.SubTitle>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
+                                        <ProgressBar Maximum="1" Value="{x:Bind ComputeProgress, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}" Width="200" />
+                                    </StackPanel>
+                                </local:SettingItemHeader.SubTitle>
+                                <local:SettingItemHeader.Command>
+                                    <Button Content="Copy" />
+                                </local:SettingItemHeader.Command>
+                            </local:SettingItemHeader>
                         </controls:CardExpander.Header>
                     </controls:CardExpander>
                 </DataTemplate>

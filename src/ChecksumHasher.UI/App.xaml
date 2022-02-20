@@ -15,6 +15,14 @@
 
             <!-- WinUI Overrides -->
             <Thickness x:Key="NavigationViewHeaderMargin">0,32,0,8</Thickness>
+
+            <!-- App Defined Styles -->
+            <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="MinWidth" Value="120" />
+            </Style>
+            <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                <Setter Property="MinWidth" Value="130" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 

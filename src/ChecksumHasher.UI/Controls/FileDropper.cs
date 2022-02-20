@@ -20,8 +20,7 @@ public class FileDropper : ContentControl
 
     public event EventHandler<FilesDroppedEventArgs>? FilesDropped;
 
-    public static readonly DependencyProperty AllowMultipleFilesProperty =
-        DependencyProperty.Register(nameof(AllowMultipleFiles), typeof(bool), typeof(FileDropper), new PropertyMetadata(false));
+    public static readonly DependencyProperty AllowMultipleFilesProperty = DependencyProperty.Register(nameof(AllowMultipleFiles), typeof(bool), typeof(FileDropper), new(false));
 
     public bool AllowMultipleFiles
     {

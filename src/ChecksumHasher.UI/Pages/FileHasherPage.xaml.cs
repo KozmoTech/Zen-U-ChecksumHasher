@@ -20,16 +20,27 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
 {
     public FileHasherPage()
     {
-        InitializeComponent();
         HeaderViewModel = new FileHasherPageHeaderViewModel("File Checksum", this);
-        SortedHashers = new(ViewModel.Hashers, true)
+        FilteredHashers = new(ViewModel.Hashers, true)
         {
+            Filter = x => ((HashCalculatorViewModel)x).IsEnabled,
             SortDescriptions =
             {
                 new SortDescription(nameof(HashCalculatorViewModel.Algorithm), SortDirection.Ascending),
             },
         };
+        InitializeComponent();
+    }
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        FilteredHashers.ObserveFilterProperty(nameof(HashCalculatorViewModel.IsEnabled));
         CurrentVisualState = PageVisualState.Initial;
+    }
+
+    private void Page_Unloaded(object sender, RoutedEventArgs e)
+    {
+        FilteredHashers.ClearObservedFilterProperties();
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
@@ -38,7 +49,7 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
     public IPageHeaderViewModel HeaderViewModel { get; }
     public DataTemplate HeaderTemplate => PageHeaderTemplate;
 
-    public AdvancedCollectionView SortedHashers { get; }
+    public AdvancedCollectionView FilteredHashers { get; }
 
     public static readonly DependencyProperty CurrentVisualStateProperty =
         DependencyProperty.Register(nameof(CurrentVisualState), typeof(PageVisualState), typeof(FileHasherPage), new(PageVisualState.Unknown, CurrentVisualStateChanged));

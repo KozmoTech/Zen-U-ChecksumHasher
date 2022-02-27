@@ -6,9 +6,8 @@
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <converters:StringFormatConverter x:Key="StringFormatConverter" />
@@ -31,11 +30,12 @@
                 <controls:AppBarDropDownButton Icon="Calculator" Label="Algorithms">
                     <controls:AppBarDropDownButton.Flyout>
                         <!-- The display shadow is buggy: https://github.com/microsoft/microsoft-ui-xaml/issues/6206 -->
-                        <MenuFlyout>
-                            <ToggleMenuFlyoutItem Text="MD5" IsChecked="{x:Bind Page.ViewModel.UseMD5, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA1" IsChecked="{x:Bind Page.ViewModel.UseSHA1, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA-256" IsChecked="{x:Bind Page.ViewModel.UseSHA256, Mode=TwoWay}" />
-                            <ToggleMenuFlyoutItem Text="SHA-512" IsChecked="{x:Bind Page.ViewModel.UseSHA512, Mode=TwoWay}" />
+                        <MenuFlyout local:MenuFlyoutExtension.ItemsSource="{x:Bind Page.ViewModel.Hashers}">
+                            <local:MenuFlyoutExtension.ItemTemplate>
+                                <DataTemplate x:DataType="core:HashCalculatorViewModel">
+                                    <ToggleMenuFlyoutItem Text="{x:Bind Algorithm}" IsChecked="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </local:MenuFlyoutExtension.ItemTemplate>
                         </MenuFlyout>
                     </controls:AppBarDropDownButton.Flyout>
                 </controls:AppBarDropDownButton>
@@ -293,7 +293,7 @@
         </controls:CardExpander>
 
         <!-- Hash Results -->
-        <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind SortedHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
+        <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind FilteredHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
                     <controls:CardExpander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">

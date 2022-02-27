@@ -21,6 +21,9 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
     public HashAlgorithmType Algorithm { get; }
 
     [ObservableProperty]
+    private bool isEnabled = true;
+
+    [ObservableProperty]
     [AlsoNotifyChangeFor(nameof(HashCodeString))]
     private HashStringFormat hashCodeFormat = HashStringFormat.LowerCaseNoDash;
 

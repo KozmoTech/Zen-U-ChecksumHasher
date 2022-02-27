@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using KozmoTech.ZenUtility.System.IO;
+using KozmoTech.CoreFx.System.IO;
 using System.ComponentModel;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 public class FileInfoViewModel : ObservableObject, IContentProvider
 {

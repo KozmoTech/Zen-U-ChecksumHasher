@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 public class SettingsViewModel : ObservableObject
 {

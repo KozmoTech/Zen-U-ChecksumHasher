@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using KozmoTech.ZenUtility.System;
-using KozmoTech.ZenUtility.System.Threading.Tasks;
+using KozmoTech.CoreFx.System;
+using KozmoTech.CoreFx.System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 public abstract partial class HashCalculatorViewModel : ObservableObject, IDisposable
 {
@@ -59,6 +59,7 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
         {
         }
 
+        // TODO: Opt the progress timer out of this class, and treat null TotalLength as indetermine
         // reader.Length might not be correct for a huge file (> 130 GB) in the first several seconds
         void Runner_TimerCallback() => ComputeProgress = (double)reader.LengthRead / (content.TotalLength ?? (ulong)reader.Length);
     }

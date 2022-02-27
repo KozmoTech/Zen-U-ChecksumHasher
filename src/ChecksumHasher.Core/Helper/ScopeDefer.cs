@@ -1,4 +1,4 @@
-﻿namespace KozmoTech.ZenUtility.System;
+﻿namespace KozmoTech.CoreFx.System;
 
 /// <summary>
 /// A scope guard which is similar to the Golang's <seealso href="https://gobyexample.com/defer">"defer statement"</seealso>.

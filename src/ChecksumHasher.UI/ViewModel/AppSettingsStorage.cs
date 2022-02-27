@@ -1,6 +1,7 @@
-﻿using Windows.Storage;
+﻿using KozmoTech.ZenUtility.ChecksumHasher.Core;
+using Windows.Storage;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 internal sealed class AppSettingsStorage : ISettingsStorage
 {

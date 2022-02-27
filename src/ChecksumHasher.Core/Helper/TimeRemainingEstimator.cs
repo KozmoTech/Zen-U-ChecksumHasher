@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace KozmoTech.ZenUtility.System.Algorithm;
+namespace KozmoTech.CoreFx.System.Algorithm;
 
 /// <summary>
 /// An estimator which will use the exponential weighted algorithm to calculate the remaining time.

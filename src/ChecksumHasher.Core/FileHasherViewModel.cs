@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using KozmoTech.ZenUtility.System;
-using KozmoTech.ZenUtility.System.Algorithm;
-using KozmoTech.ZenUtility.System.Threading.Tasks;
+using KozmoTech.CoreFx.System;
+using KozmoTech.CoreFx.System.Algorithm;
+using KozmoTech.CoreFx.System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 public sealed partial class FileHasherViewModel : ObservableObject, IDisposable, IDisposableNullifyFields
 {

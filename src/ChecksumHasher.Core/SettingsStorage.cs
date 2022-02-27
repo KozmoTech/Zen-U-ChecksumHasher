@@ -1,4 +1,4 @@
-﻿namespace KozmoTech.ZenUtility.ChecksumHasher;
+﻿namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 public interface ISettingsStorage
 {

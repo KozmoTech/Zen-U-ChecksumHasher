@@ -1,6 +1,7 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
+﻿using KozmoTech.ZenUtility.ChecksumHasher.Core;
+using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 internal sealed class BitmapPicture : IPicture
 {

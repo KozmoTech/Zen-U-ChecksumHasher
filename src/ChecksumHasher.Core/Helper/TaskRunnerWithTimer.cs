@@ -1,4 +1,4 @@
-﻿namespace KozmoTech.ZenUtility.System.Threading.Tasks;
+﻿namespace KozmoTech.CoreFx.System.Threading.Tasks;
 
 /// <summary>
 /// A task runner which will also invoke a callback method periodically as the task is running.

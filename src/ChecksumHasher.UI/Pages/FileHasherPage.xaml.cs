@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.WinUI.UI;
+using KozmoTech.CoreFx.System;
+using KozmoTech.ZenUtility.ChecksumHasher.Core;
 using KozmoTech.ZenUtility.ChecksumHasher.UI.Controls;
-using KozmoTech.ZenUtility.System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;

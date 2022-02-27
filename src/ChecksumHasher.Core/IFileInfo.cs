@@ -1,4 +1,4 @@
-﻿namespace KozmoTech.ZenUtility.ChecksumHasher;
+﻿namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 /// <summary>
 /// A platform-independent file details object.

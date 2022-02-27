@@ -1,6 +1,6 @@
-﻿using KozmoTech.ZenUtility.System.IO;
+﻿using KozmoTech.CoreFx.System.IO;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 internal interface IContentProvider
 {

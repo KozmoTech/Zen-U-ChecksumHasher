@@ -1,4 +1,4 @@
-﻿namespace KozmoTech.ZenUtility.System.IO;
+﻿namespace KozmoTech.CoreFx.System.IO;
 
 /// <summary>
 /// A forward-only and read-only stream implementation, which will also reports the bytes that have already been read.

@@ -1,8 +1,9 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
+﻿using KozmoTech.ZenUtility.ChecksumHasher.Core;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 internal class WindowsFileInfo : IFileInfo
 {

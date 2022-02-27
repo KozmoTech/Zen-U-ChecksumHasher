@@ -1,8 +1,9 @@
-﻿using Microsoft.UI.Xaml;
+﻿using KozmoTech.ZenUtility.ChecksumHasher.Core;
+using Microsoft.UI.Xaml;
 using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel;
 
-namespace KozmoTech.ZenUtility.ChecksumHasher;
+namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 /// <summary>
 /// The UI App specific settings.

@@ -2,7 +2,7 @@
     x:Class="KozmoTech.ZenUtility.ChecksumHasher.UI.FileHasherPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:core="using:KozmoTech.ZenUtility.ChecksumHasher"
+    xmlns:core="using:KozmoTech.ZenUtility.ChecksumHasher.Core"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"

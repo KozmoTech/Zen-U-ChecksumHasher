@@ -24,7 +24,7 @@ public abstract partial class HashCalculatorViewModel : ObservableObject, IDispo
     private bool isEnabled = true;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(HashCodeString))]
+    [NotifyPropertyChangedFor(nameof(HashCodeString))]
     private HashStringFormat hashCodeFormat = HashStringFormat.LowerCaseNoDash;
 
     public double? ComputeProgress

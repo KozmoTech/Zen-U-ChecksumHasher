@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace KozmoTech.CoreFx.System.Algorithm;
+namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
 
 /// <summary>
 /// An estimator which will use the exponential weighted algorithm to calculate the remaining time.

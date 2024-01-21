@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KozmoTech.CoreFx.System;
-using KozmoTech.CoreFx.System.Algorithm;
 using KozmoTech.CoreFx.System.Threading.Tasks;
 using System.Collections.ObjectModel;
 
@@ -33,7 +32,7 @@ public sealed partial class FileHasherViewModel : ObservableObject, IDisposable
 
     public TimeSpan TimeRemaining => timeRemaining.TimeRemaining ?? TimeSpan.Zero;
 
-    [ICommand]
+    [RelayCommand]
     internal async Task ComputeAllHashesAsync(CancellationToken cancellation)
     {
         if (FileInfo is null)

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using KozmoTech.CoreFx.System.IO;
 using System.ComponentModel;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher.Core;
@@ -20,11 +19,7 @@ public class FileInfoViewModel : ObservableObject, IContentProvider
         OnPropertyChanged(nameof(Icon));
     }
 
-    async Task<StreamReaderWithProgress> IContentProvider.CreateContentReaderAsync()
-    {
-        var stream = await file.OpenSequentialReadAsync();
-        return new StreamReaderWithProgress(stream);
-    }
+    Task<Stream> IContentProvider.CreateContentReaderAsync() => file.OpenSequentialReadAsync();
 
     public string FileName => Path.GetFileName(file.FullPath) ?? string.Empty;
     public string DirectoryPath => Path.GetDirectoryName(file.FullPath) ?? string.Empty;

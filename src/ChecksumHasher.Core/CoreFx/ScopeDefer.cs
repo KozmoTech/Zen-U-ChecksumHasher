@@ -3,23 +3,33 @@
 /// <summary>
 /// A scope guard which is similar to the Golang's <seealso href="https://gobyexample.com/defer">"defer statement"</seealso>.
 /// </summary>
-/// <example>
-/// <code>
+/// <remarks>
+/// <example><code>
 /// using var defer = new ScopeDefer(() => ...);
-/// </code>
-/// </example>
-public sealed class ScopeDefer : IDisposable, IDisposableManaged
+/// </code></example>
+/// </remarks>
+public sealed class ScopeDefer : IDisposable
 {
-    public ScopeDefer(Action disposing)
-    {
-        disposable = new(this);
-        disposingAction = disposing ?? throw new ArgumentNullException(nameof(disposing));
-    }
+    public ScopeDefer(Action disposing) => _disposingAction = disposing ?? throw new ArgumentNullException(nameof(disposing));
 
-    public void Dispose() => disposable.DoDispose();
+    public void Dispose() => _disposingAction();
 
-    public void DisposeManagedResources() => disposingAction();
+    private readonly Action _disposingAction;
+}
 
-    private readonly Action disposingAction;
-    private readonly DisposableHelper disposable;
+/// <summary>
+/// A scope guard which is similar to the Golang's <seealso href="https://gobyexample.com/defer">"defer statement"</seealso>, but asynchronously.
+/// </summary>
+/// <remarks>
+/// <example><code>
+/// await using var defer = new ScopeDefer(async () => ...);
+/// </code></example>
+/// </remarks>
+public sealed class AsyncScopeDefer : IAsyncDisposable
+{
+    public AsyncScopeDefer(Func<ValueTask> disposing) => _disposingTask = disposing ?? throw new ArgumentNullException(nameof(disposing));
+
+    public ValueTask DisposeAsync() => _disposingTask();
+
+    private readonly Func<ValueTask> _disposingTask;
 }

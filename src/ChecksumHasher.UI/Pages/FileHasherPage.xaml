@@ -174,7 +174,7 @@
                     x:Name="ComputingProgress"
                     Minimum="0"
                     Maximum="1"
-                    Value="{x:Bind ViewModel.OverallProgress, Mode=OneWay}"
+                    Value="{x:Bind ViewModel.ComputeProgress.Percentage, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}"
                     Width="120"
                     Height="120"
                     IsIndeterminate="False"
@@ -182,7 +182,7 @@
 
                 <TextBlock
                     x:Name="ComputingPercentage"
-                    Text="{x:Bind ViewModel.OverallProgress, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
+                    Text="{x:Bind ViewModel.ComputeProgress.Percentage, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Style="{StaticResource TitleTextBlockStyle}"
@@ -192,7 +192,7 @@
                 <TextBlock
                     x:Name="RemainingTimeText"
                     Grid.Row="1"
-                    Text="{x:Bind ViewModel.TimeRemaining, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='About {0} remaining'}"
+                    Text="{x:Bind ViewModel.ComputeProgress.RemainingTime, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='About {0} remaining'}"
                     Style="{StaticResource CaptionTextBlockStyle}"
                     Visibility="Collapsed" />
 
@@ -308,7 +308,6 @@
                                 <local:SettingItemHeader.SubTitle>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
-                                        <ProgressBar Maximum="1" Value="{x:Bind ComputeProgress, Mode=OneWay, Converter={StaticResource PercentageDoubleConverter}}" Width="200" />
                                     </StackPanel>
                                 </local:SettingItemHeader.SubTitle>
                                 <local:SettingItemHeader.Command>

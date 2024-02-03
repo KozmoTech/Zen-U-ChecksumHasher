@@ -1,27 +1,53 @@
-﻿using Microsoft.UI;
+﻿using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Diagnostics;
-using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI;
-using WinRT.Interop;
 
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI.Controls;
+
+public interface ITitleBarInteractiveControlsProvider
+{
+    IEnumerable<FrameworkElement> ListTitleBarInteractiveControls();
+}
 
 public sealed class TitleBar : Control
 {
     public TitleBar()
     {
         DefaultStyleKey = typeof(TitleBar);
-        SizeChanged += TitleBar_SizeChanged;
+        Loaded += (s, e) => UpdateInteractiveControlsRegions();
+        SizeChanged += (s, e) => UpdateInteractiveControlsRegions();
     }
 
-    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new(string.Empty, TitleChanged));
+    /// <summary>
+    /// Setup the title bar customization for the specific <paramref name="window"/>.
+    /// We recommend you to call this function in <paramref name="window"/>'s constructor, with <see cref="Window.Title"/> property set.
+    /// </summary>
+    /// <param name="window">The main window whose title bar would be customized.</param>
+    /// <param name="controls">The interactive controls that might locate within the title bar area.</param>
+    public void ReplaceSystemTitleBar(Window window, params ITitleBarInteractiveControlsProvider[] controls)
+    {
+        Title = window.Title;
+        window.ExtendsContentIntoTitleBar = true;
+        window.SetTitleBar(this);
+
+        _sysTitleBar = window.AppWindow.TitleBar;
+        _interactiveControls = controls;
+        _ncHitTestRegions = InputNonClientPointerSource.GetForWindowId(window.AppWindow.Id);
+
+        _sysTitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+        UpdateTitleBarButtonColors();
+    }
+
+    #region Title
+
+    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new(string.Empty));
 
     /// <summary>
-    /// Get or set the title of the window.
+    /// Get or set the title text.
     /// </summary>
     public string Title
     {
@@ -29,138 +55,95 @@ public sealed class TitleBar : Control
         set => SetValue(TitleProperty, value);
     }
 
+    #endregion Title
+
+    #region Button Colors
+
     public static readonly DependencyProperty ButtonForegroundColorProperty =
-        DependencyProperty.Register(nameof(ButtonForegroundColor), typeof(Color), typeof(TitleBar), new(null, ButtonForegroundColorChanged));
+        DependencyProperty.Register(nameof(ButtonForegroundColor), typeof(Color?), typeof(TitleBar), new(null, ButtonColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons foreground color. <c>new Color()</c> means default value.
     /// </summary>
-    public Color ButtonForegroundColor
+    public Color? ButtonForegroundColor
     {
-        get => (Color)GetValue(ButtonForegroundColorProperty);
+        get => (Color?)GetValue(ButtonForegroundColorProperty);
         set => SetValue(ButtonForegroundColorProperty, value);
     }
 
-    public static readonly DependencyProperty ButtonHoverColorProperty = DependencyProperty.Register(nameof(ButtonHoverColor), typeof(Color), typeof(TitleBar), new(null, ButtoHoverColorChanged));
+    public static readonly DependencyProperty ButtonHoverColorProperty = DependencyProperty.Register(nameof(ButtonHoverColor), typeof(Color?), typeof(TitleBar), new(null, ButtonColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons hover background color. <c>new Color()</c> means default value.
     /// </summary>
-    public Color ButtonHoverColor
+    public Color? ButtonHoverColor
     {
-        get => (Color)GetValue(ButtonHoverColorProperty);
+        get => (Color?)GetValue(ButtonHoverColorProperty);
         set => SetValue(ButtonHoverColorProperty, value);
     }
 
     public static readonly DependencyProperty ButtonPressedColorProperty =
-        DependencyProperty.Register(nameof(ButtonPressedColor), typeof(Color), typeof(TitleBar), new(null, ButtoPressedColorChanged));
+        DependencyProperty.Register(nameof(ButtonPressedColor), typeof(Color?), typeof(TitleBar), new(null, ButtonColorChanged));
 
     /// <summary>
     /// Get or set the Min-Max buttons pressed background color. <c>new Color()</c> means default value.
     /// </summary>
-    public Color ButtonPressedColor
+    public Color? ButtonPressedColor
     {
-        get => (Color)GetValue(ButtonPressedColorProperty);
+        get => (Color?)GetValue(ButtonPressedColorProperty);
         set => SetValue(ButtonPressedColorProperty, value);
     }
 
-    /// <summary>
-    /// Setup the title bar customization for the specific <paramref name="window"/>.
-    /// </summary>
-    /// <param name="window">The main window whose title bar would be customized.</param>
-    /// <remarks>
-    /// We did not use <see cref="Window.ExtendsContentIntoTitleBar"/> because the implementation now is buggy. For example,
-    /// here is <seealso href="https://github.com/microsoft/microsoft-ui-xaml/issues/6333">one of the various issues</seealso>.
-    /// Besides, the titlebar background and the window shadow is far from normal as well.
-    /// </remarks>
-    public void ReplaceSystemTitleBar(Window window)
+    private static void ButtonColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar)d).UpdateTitleBarButtonColors();
+
+    private void UpdateTitleBarButtonColors()
     {
-        hwnd = WindowNative.GetWindowHandle(window);
-        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-        appWindow = AppWindow.GetFromWindowId(windowId);
-        rootContent = window.Content;
-
-        ExtendContentsIntoTitleBar();
-    }
-
-    private void ExtendContentsIntoTitleBar()
-    {
-        Debug.Assert(hwnd != IntPtr.Zero && appWindow is not null);
-
-        appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
-        appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
-        appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-
-        UpdateWindowTitle();
-        UpdateTitleBarButtonForegroundColor();
-        UpdateTitleBarButtonHoverColor();
-        UpdateTitleBarButtonPressedColor();
-    }
-
-    private void UpdateTitleBarDragRegion()
-    {
-        Debug.Assert(appWindow is not null && rootContent is not null);
-
-        var coordinateTransform = TransformToVisual(rootContent);
-        var originalRegion = new Rect(new Point(0, 0), new Size(ActualSize.X, ActualSize.Y));
-        var targetRegion = coordinateTransform.TransformBounds(originalRegion);
-        appWindow.TitleBar.SetDragRectangles(new[]
+        if (_sysTitleBar != null)
         {
-            new RectInt32((int)targetRegion.X, (int)targetRegion.Y, (int)targetRegion.Width, (int)targetRegion.Height),
-        });
-    }
-
-    private void UpdateWindowTitle()
-    {
-        if (appWindow is not null)
-        {
-            appWindow.Title = Title;
+            _sysTitleBar.ButtonForegroundColor = ButtonForegroundColor;
+            _sysTitleBar.ButtonHoverForegroundColor = ButtonForegroundColor;
+            _sysTitleBar.ButtonHoverBackgroundColor = ButtonHoverColor;
+            _sysTitleBar.ButtonPressedForegroundColor = ButtonForegroundColor;
+            _sysTitleBar.ButtonPressedBackgroundColor = ButtonPressedColor;
         }
     }
 
-    private void UpdateTitleBarButtonForegroundColor()
+    #endregion Button Colors
+
+    #region Interactive Controls
+
+    private InputNonClientPointerSource? _ncHitTestRegions;
+    private IEnumerable<ITitleBarInteractiveControlsProvider>? _interactiveControls;
+
+    private void UpdateInteractiveControlsRegions()
     {
-        if (appWindow is not null)
+        Debug.Assert(_ncHitTestRegions is not null);
+        Debug.Assert(_interactiveControls is not null);
+
+        var scale = XamlRoot.RasterizationScale;
+        var passRegions = from pvd in _interactiveControls
+                          from c in pvd.ListTitleBarInteractiveControls()
+                          select TransformToNativeNCRect(c);
+        _ncHitTestRegions.SetRegionRects(NonClientRegionKind.Passthrough, passRegions.ToArray());
+
+        RectInt32 TransformToNativeNCRect(FrameworkElement element)
         {
-            appWindow.TitleBar.ButtonForegroundColor
-                = appWindow.TitleBar.ButtonHoverForegroundColor
-                = appWindow.TitleBar.ButtonPressedForegroundColor
-                = ToTitleBarColor(ButtonForegroundColor);
+            var coordinate = element.TransformToVisual(null);
+            var bounds = coordinate.TransformBounds(new(
+                x: 0, y: 0,
+                width: element.ActualWidth,
+                height: element.ActualHeight));
+            return new(
+                _X: RoundWithScale(bounds.X),
+                _Y: RoundWithScale(bounds.Y),
+                _Width: RoundWithScale(bounds.Width),
+                _Height: RoundWithScale(bounds.Height));
+
+            int RoundWithScale(double x) => (int)Math.Round(x * scale);
         }
     }
 
-    private void UpdateTitleBarButtonHoverColor()
-    {
-        if (appWindow is not null)
-        {
-            // TODO: can use CommunityToolkit.WinUI.UI.TitleBarExtensions here
-            appWindow.TitleBar.ButtonHoverBackgroundColor = ToTitleBarColor(ButtonHoverColor);
-        }
-    }
+    #endregion Interactive Controls
 
-    private void UpdateTitleBarButtonPressedColor()
-    {
-        if (appWindow is not null)
-        {
-            appWindow.TitleBar.ButtonPressedBackgroundColor = ToTitleBarColor(ButtonPressedColor);
-        }
-    }
-
-    private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar) d).UpdateWindowTitle();
-
-    private static void ButtonForegroundColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar)d).UpdateTitleBarButtonForegroundColor();
-
-    private static void ButtoHoverColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar)d).UpdateTitleBarButtonHoverColor();
-
-    private static void ButtoPressedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((TitleBar)d).UpdateTitleBarButtonPressedColor();
-
-    private void TitleBar_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateTitleBarDragRegion();
-
-    private static Color? ToTitleBarColor(Color color) => color == EmptyColor ? null : color;
-
-    private IntPtr hwnd = IntPtr.Zero;
-    private AppWindow? appWindow;
-    private UIElement? rootContent;
-
-    private static readonly Color EmptyColor = new Color();
+    private AppWindowTitleBar? _sysTitleBar;
 }

@@ -18,8 +18,10 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        Title = SettingsViewModel.AppName;
         hwnd = WindowNative.GetWindowHandle(this);
-        MainTitleBar.ReplaceSystemTitleBar(this);
+        MainTitleBar.ReplaceSystemTitleBar(this, MainNavigation);
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]

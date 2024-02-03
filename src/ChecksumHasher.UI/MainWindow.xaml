@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
+    xmlns:winuiex="using:CommunityToolkit.WinUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -28,15 +29,13 @@
 
         <controls:TitleBarTopNavigationView
             x:Name="MainNavigation"
+            AlwaysShowHeader="False"
             SelectionChanged="MainNavigation_SelectionChanged"
             BackRequested="MainNavigation_BackRequested">
 
-            <NavigationView.Resources>
-                <local:SupportedPageType x:Key="FileHasherPageTag">FileHasher</local:SupportedPageType>
-            </NavigationView.Resources>
-
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="OpenFile" Content="File Checksum" Tag="{StaticResource FileHasherPageTag}" IsSelected="True" />
+                <NavigationViewItem Icon="OpenFile" Content="File Checksum" Tag="{x:Bind local:AppPage.FileHasher, Mode=OneTime}" IsSelected="True" />
+                <NavigationViewItem Icon="{winuiex:FontIcon Glyph=&#xE928;}" Content="Verify" Tag="{x:Bind local:AppPage.HashVerifier, Mode=OneTime}" />
             </NavigationView.MenuItems>
 
             <NavigationView.PaneFooter>
@@ -50,7 +49,7 @@
                 HorizontalScrollMode="Disabled"
                 HorizontalScrollBarVisibility="Disabled"
                 IsHorizontalRailEnabled="False">
-                <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated" Padding="{StaticResource PageContentPadding}" />
+                <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated" />
             </ScrollViewer>
 
         </controls:TitleBarTopNavigationView>

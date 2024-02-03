@@ -5,42 +5,15 @@
     xmlns:core="using:KozmoTech.ZenUtility.ChecksumHasher.Core"
     xmlns:local="using:KozmoTech.ZenUtility.ChecksumHasher.UI"
     xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:winuiex="using:CommunityToolkit.WinUI"
+    xmlns:ctrlex="using:CommunityToolkit.WinUI.Controls"
+    xmlns:cvtex="using:CommunityToolkit.WinUI.Converters"
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded">
 
     <Page.Resources>
-        <converters:StringFormatConverter x:Key="StringFormatConverter" />
+        <cvtex:StringFormatConverter x:Key="StringFormatConverter" />
         <local:PercentageDoubleConverter x:Key="PercentageDoubleConverter" />
-
-        <DataTemplate x:Key="PageHeaderTemplate" x:Name="PageHeaderTemplate" x:DataType="local:FileHasherPageHeaderViewModel">
-            <!-- We disable the overflow because of a bug in AppBarButton: https://github.com/microsoft/microsoft-ui-xaml/issues/6450 -->
-            <CommandBar
-                Content="{x:Bind Title}"
-                Margin="{StaticResource PageTitleCommandBarMargin}"
-                VerticalContentAlignment="Center"
-                DefaultLabelPosition="Right"
-                IsDynamicOverflowEnabled="True">
-
-                <CommandBar.SecondaryCommands>
-                    <AppBarButton Icon="Refresh" Label="Recalculate" />
-                </CommandBar.SecondaryCommands>
-
-                <AppBarButton Icon="BrowsePhotos" Label="{x:Bind local:FileHasherPage.PickFileButtonText(Page.CurrentVisualState), Mode=OneWay}" Click="BrowseButton_Click" />
-                <controls:AppBarDropDownButton Icon="Calculator" Label="Algorithms">
-                    <controls:AppBarDropDownButton.Flyout>
-                        <!-- The display shadow is buggy: https://github.com/microsoft/microsoft-ui-xaml/issues/6206 -->
-                        <MenuFlyout local:MenuFlyoutExtension.ItemsSource="{x:Bind Page.ViewModel.Hashers}">
-                            <local:MenuFlyoutExtension.ItemTemplate>
-                                <DataTemplate x:DataType="core:HashCalculatorViewModel">
-                                    <ToggleMenuFlyoutItem Text="{x:Bind Algorithm}" IsChecked="{x:Bind IsEnabled, Mode=TwoWay}" />
-                                </DataTemplate>
-                            </local:MenuFlyoutExtension.ItemTemplate>
-                        </MenuFlyout>
-                    </controls:AppBarDropDownButton.Flyout>
-                </controls:AppBarDropDownButton>
-            </CommandBar>
-        </DataTemplate>
 
         <Style x:Key="FilePropertyTitleStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
@@ -57,9 +30,9 @@
 
     <Grid
         x:Name="RootContent"
-        Background="Transparent"
         DragEnter="RootContent_DragEnter"
-        DragLeave="RootContent_DragLeave">
+        DragLeave="RootContent_DragLeave"
+        Margin="{StaticResource PageContentPadding}">
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="PageStates">
@@ -112,7 +85,7 @@
         </VisualStateManager.VisualStateGroups>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -120,8 +93,6 @@
         <!-- File Details Sheet, overlapped with File Dropper -->
         <Grid
             x:Name="FileDetails"
-            Margin="0,8,0,16"
-            Padding="0,12,0,20"
             HorizontalAlignment="Center"
             RowSpacing="12"
             ColumnSpacing="32"
@@ -235,8 +206,6 @@
         <!-- File Dropper Rectangle -->
         <controls:FileDropper
             x:Name="FileDropper"
-            Height="300"
-            Margin="2,12,2,36"
             FilesDropped="FileDropper_FilesDropped">
 
             <StackPanel>
@@ -265,57 +234,28 @@
             </StackPanel>
         </controls:FileDropper>
 
-        <!-- Hash Comparison -->
-        <controls:CardExpander
-            Grid.Row="1"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Stretch"
-            Margin="0,0,0,12">
-
-            <controls:CardExpander.Header>
-                <local:SettingItemHeader>
-                    <local:SettingItemHeader.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE928;" />
-                    </local:SettingItemHeader.Icon>
-                    <local:SettingItemHeader.Title>
-                        <TextBlock Text="Verification" />
-                    </local:SettingItemHeader.Title>
-                    <local:SettingItemHeader.SubTitle>
-                        <TextBlock Text="Validate the content through a raw checksum or a signature file." />
-                    </local:SettingItemHeader.SubTitle>
-                </local:SettingItemHeader>
-            </controls:CardExpander.Header>
-
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="Hash to Compare" />
-                <TextBox />
-            </StackPanel>
-        </controls:CardExpander>
+        <!-- Hash Algorithms -->
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Hash Algorithms" />
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Hashers, Mode=OneTime}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="core:HashCalculatorViewModel">
+                        <CheckBox Content="{x:Bind Algorithm}" IsChecked="{x:Bind IsEnabled, Mode=TwoWay}" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
 
         <!-- Hash Results -->
         <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind FilteredHashers, Mode=OneWay}" HorizontalAlignment="Stretch">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="core:HashCalculatorViewModel">
-                    <controls:CardExpander Margin="0,0,0,4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                        <controls:CardExpander.Header>
-                            <local:SettingItemHeader>
-                                <local:SettingItemHeader.Icon>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE950;" />
-                                </local:SettingItemHeader.Icon>
-                                <local:SettingItemHeader.Title>
-                                    <TextBlock Text="{x:Bind Algorithm}" />
-                                </local:SettingItemHeader.Title>
-                                <local:SettingItemHeader.SubTitle>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{x:Bind HashCodeString, Mode=OneWay}" IsTextSelectionEnabled="True" />
-                                    </StackPanel>
-                                </local:SettingItemHeader.SubTitle>
-                                <local:SettingItemHeader.Command>
-                                    <Button Content="Copy" />
-                                </local:SettingItemHeader.Command>
-                            </local:SettingItemHeader>
-                        </controls:CardExpander.Header>
-                    </controls:CardExpander>
+                    <ctrlex:SettingsCard
+                        HeaderIcon="{winuiex:FontIcon Glyph=&#xE950;}"
+                        Header="{x:Bind Algorithm}"
+                        Description="{x:Bind HashCodeString, Mode=OneWay}">
+                        <Button Content="Copy" />
+                    </ctrlex:SettingsCard>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

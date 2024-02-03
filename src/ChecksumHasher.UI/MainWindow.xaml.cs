@@ -11,6 +11,26 @@ using WinRT.Interop;
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 /// <summary>
+/// A strongly typed enumeration representing all supported pages in this App.
+/// </summary>
+public enum AppPage
+{
+    FileHasher, HashVerifier, Settings
+}
+
+internal static class AppPageExtensions
+{
+    internal static Type ToPageType(this AppPage @this) =>
+        @this switch
+        {
+            AppPage.FileHasher => typeof(FileHasherPage),
+            AppPage.HashVerifier => typeof(HashVerifierPage),
+            AppPage.Settings => typeof(SettingsPage),
+            _ => throw new NotSupportedException($"page {@this} is not supported"),
+        };
+}
+
+/// <summary>
 /// MainWindow handles all root level navigation related stuffs.
 /// </summary>
 public sealed partial class MainWindow : Window
@@ -20,7 +40,6 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         Title = SettingsViewModel.AppName;
-        hwnd = WindowNative.GetWindowHandle(this);
         MainTitleBar.ReplaceSystemTitleBar(this, MainNavigation);
     }
 
@@ -29,27 +48,29 @@ public sealed partial class MainWindow : Window
 
     public IAsyncOperation<StorageFile?> ShowPickSingleFileDialogAsync(FileOpenPicker dialog)
     {
-        InitializeWithWindow.Initialize(dialog, hwnd);
+        InitializeWithWindow.Initialize(dialog, WindowNative.GetWindowHandle(this));
         return dialog.PickSingleFileAsync();
     }
+
+    #region Navigation
 
     private void MainNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         if (args.IsSettingsSelected)
         {
-            NavigateTo(SupportedPageType.Settings);
+            NavigateTo(AppPage.Settings);
         }
         else if (args.SelectedItemContainer is not null)
         {
-            NavigateTo((SupportedPageType)args.SelectedItemContainer.Tag);
+            NavigateTo((AppPage)args.SelectedItemContainer.Tag);
         }
 
-        void NavigateTo(SupportedPageType targetPage)
+        void NavigateTo(AppPage targetPage)
         {
-            if (targetPage != currentPage)
+            if (targetPage != _currentPage)
             {
-                ContentFrame.Navigate(SupportedPageTypeToPage(targetPage));
-                currentPage = targetPage;
+                ContentFrame.Navigate(targetPage.ToPageType());
+                _currentPage = targetPage;
             }
         }
     }
@@ -57,61 +78,26 @@ public sealed partial class MainWindow : Window
     private void ContentFrame_Navigated(object sender, NavigationEventArgs e)
     {
         MainNavigation.IsBackEnabled = ContentFrame.CanGoBack;
+        MainNavigation.SelectedItem = e.SourcePageType == typeof(SettingsPage) ? MainNavigation.SettingsItem : FindFirstByTag(e.SourcePageType);
 
-        MainNavigation.Header = null;
-        if (ContentFrame.Content is IPageWithHeader pageWithHeader)
-        {
-            MainNavigation.Header = pageWithHeader.HeaderViewModel;
-            MainNavigation.HeaderTemplate = pageWithHeader.HeaderTemplate;
-        }
-
-        MainNavigation.SelectedItem = PageToSupportedPageType(e.SourcePageType) switch
-        {
-            SupportedPageType.Settings => MainNavigation.SettingsItem,
-            SupportedPageType pageType => MainNavigation.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (SupportedPageType)x.Tag == pageType),
-        };
+        NavigationViewItem FindFirstByTag(Type pageType) =>
+            (from it in MainNavigation.MenuItems
+             where it is NavigationViewItem
+             let nvi = (NavigationViewItem)it
+             where ((AppPage)nvi.Tag).ToPageType() == pageType
+             select nvi).First();
     }
 
-    private void MainNavigation_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs e) => TryGoBack();
-
-    private bool TryGoBack()
+    private void MainNavigation_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs e)
     {
-        if (!ContentFrame.CanGoBack)
+        if (ContentFrame.CanGoBack)
         {
-            return false;
+            ContentFrame.GoBack();
         }
-        if (MainNavigation.IsPaneOpen)
-        {
-            // "Go Back" means close the navigation menu
-            MainNavigation.IsPaneOpen = false;
-            return false;
-        }
-
-        ContentFrame.GoBack();
-        return true;
     }
 
-    private static Type SupportedPageTypeToPage(SupportedPageType page) =>
-        page switch
-        {
-            SupportedPageType.FileHasher => typeof(FileHasherPage),
-            SupportedPageType.Settings => typeof(SettingsPage),
-            _ => throw new NotSupportedException($"page {page} is not supported"),
-        };
+    private AppPage? _currentPage = null;
 
-    private static SupportedPageType PageToSupportedPageType(Type page) =>
-        page == typeof(FileHasherPage) ? SupportedPageType.FileHasher
-        : page == typeof(SettingsPage) ? SupportedPageType.Settings
-        : throw new NotSupportedException($"page {page} is not recognized");
+    #endregion Navigation
 
-    private readonly IntPtr hwnd;
-    private SupportedPageType? currentPage = null;
-}
-
-/// <summary>
-/// A strongly typed enumeration representing all supported pages in this App.
-/// </summary>
-public enum SupportedPageType
-{
-    FileHasher, Settings
 }

@@ -1,0 +1,44 @@
+<Page
+    x:Class="KozmoTech.ZenUtility.ChecksumHasher.UI.HashVerifierPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:KozmoTech.ZenUtility.ChecksumHasher.UI.Controls">
+
+    <Grid Margin="{StaticResource PageContentPadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <controls:FileDropper Grid.Row="0">
+            <StackPanel>
+                <Viewbox Width="32" Height="32" HorizontalAlignment="Center" Margin="8">
+                    <SymbolIcon Symbol="Upload" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                </Viewbox>
+                <TextBlock
+                    Text="Drag and Drop a Single File Here"
+                    HorizontalAlignment="Center"
+                    Margin="12,12,12,0"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    FontSize="24"
+                    FontWeight="Light" />
+                <TextBlock
+                    x:Name="PickFileButtonSeparator"
+                    Text="or"
+                    HorizontalAlignment="Center"
+                    Margin="12,24,12,12"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}" />
+                <Button
+                    x:Name="PickFileButton"
+                    Content="Pick a File"
+                    HorizontalAlignment="Center" />
+            </StackPanel>
+        </controls:FileDropper>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <TextBlock Text="Hash to Compare" />
+            <TextBox />
+        </StackPanel>
+    </Grid>
+</Page>

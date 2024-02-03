@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.WinUI.UI;
+using CommunityToolkit.WinUI.Collections;
 using KozmoTech.CoreFx.System;
 using KozmoTech.ZenUtility.ChecksumHasher.Core;
 using KozmoTech.ZenUtility.ChecksumHasher.UI.Controls;
@@ -14,13 +14,12 @@ using Windows.Storage.Pickers;
 namespace KozmoTech.ZenUtility.ChecksumHasher.UI;
 
 /// <summary>
-/// A page used to calculate and compare file checksums.
+/// A page used to calculate file checksums.
 /// </summary>
-public sealed partial class FileHasherPage : Page, IPageWithHeader
+public sealed partial class FileHasherPage : Page
 {
     public FileHasherPage()
     {
-        HeaderViewModel = new FileHasherPageHeaderViewModel("File Checksum", this);
         FilteredHashers = new(ViewModel.Hashers, true)
         {
             Filter = x => ((HashCalculatorViewModel)x).IsEnabled,
@@ -45,9 +44,6 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Simpler for bindings")]
     public FileHasherViewModel ViewModel => Ioc.Default.GetRequiredService<FileHasherViewModel>();
-
-    public IPageHeaderViewModel HeaderViewModel { get; }
-    public DataTemplate HeaderTemplate => PageHeaderTemplate;
 
     public AdvancedCollectionView FilteredHashers { get; }
 
@@ -140,5 +136,3 @@ public sealed partial class FileHasherPage : Page, IPageWithHeader
         Unknown, Initial, Loading, Computing, Computed
     }
 }
-
-public sealed record class FileHasherPageHeaderViewModel(string Title, FileHasherPage Page) : PageHeaderViewModel(Title);

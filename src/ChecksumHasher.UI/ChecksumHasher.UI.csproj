@@ -18,9 +18,8 @@
   <ItemGroup>
     <None Remove="Controls\CardSettingHeaderUserControl.xaml" />
     <None Remove="Pages\FileHasherPage.xaml" />
+    <None Remove="Pages\HashVerifierPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
-    <None Remove="Themes\AppBarDropDownButton.xaml" />
-    <None Remove="Themes\CardExpander.xaml" />
     <None Remove="Themes\FileDropper.xaml" />
     <None Remove="Themes\TitleBar.xaml" />
   </ItemGroup>
@@ -36,7 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
@@ -53,17 +55,7 @@
     <ProjectReference Include="..\ChecksumHasher.Core\ChecksumHasher.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\SettingItemHeader.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Themes\CardExpander.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Themes\AppBarDropDownButton.xaml">
+    <Page Update="Pages\HashVerifierPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
